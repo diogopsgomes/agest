@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -52,6 +53,7 @@ export default async function RootLayout({
             <SidebarInset className="px-5">
               <Header />
               <main className="py-2.5">{children}</main>
+              <Toaster />
             </SidebarInset>
           </SidebarProvider>
         </ThemeProvider>
