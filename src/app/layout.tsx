@@ -4,7 +4,11 @@ import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarContent,
+  SidebarInset,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
 import { ThemeProvider } from "@/components/theme-provider";

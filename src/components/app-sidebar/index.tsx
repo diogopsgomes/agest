@@ -1,4 +1,6 @@
-import Image from "next/image";
+"use client";
+
+import Link from "next/link";
 import { FileText, FolderOpen, Home, Package, Users } from "lucide-react";
 
 import {
@@ -11,6 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { AppIcon } from "@/components/svg/app-icon";
 import { AppWordmark } from "@/components/svg/app-wordmark";
@@ -49,16 +52,21 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const { setOpenMobile } = useSidebar();
+
   return (
     <aside>
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuButton asChild>
-              <a href="/">
+              <Link
+                href="/"
+                onClick={() => setOpenMobile(false)}
+              >
                 <AppIcon />
                 <AppWordmark className="w-12!" />
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenu>
         </SidebarHeader>
@@ -72,10 +80,13 @@ export function AppSidebar() {
                       tooltip={item.title}
                       asChild
                     >
-                      <a href={item.url}>
+                      <Link
+                        href={item.url}
+                        onClick={() => setOpenMobile(false)}
+                      >
                         <item.icon />
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

@@ -11,9 +11,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { getClients } from "@/services/actions/client";
 
 interface Client {
@@ -26,7 +25,7 @@ interface Client {
   tlf: string;
 }
 
-export default function ClientsTable() {
+export default function ClientsList() {
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -63,14 +62,6 @@ export default function ClientsTable() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full max-w-md"
           />
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => alert("Adicionar cliente")}
-          >
-            <Plus /> Adicionar
-          </Button>
         </div>
       </div>
 

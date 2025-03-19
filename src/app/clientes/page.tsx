@@ -1,9 +1,12 @@
-import ClientsTable from "@/components/client/table";
+import ClientsMenu from "@/components/client/menu";
+import ClientsList from "@/components/client/list";
 
-export default async function Clientes() {
+export default function Clientes() {
   return (
     <>
-      <ClientsTable />
+      <h1 className="text-2xl font-semibold mb-8">Clientes</h1>
+      <ClientsMenu />
+      <ClientsList />
     </>
   );
 }

@@ -22,7 +22,9 @@ export function AppBreadcrumb() {
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/">Início</BreadcrumbLink>
+          <BreadcrumbLink asChild>
+            <Link href="/">Início</Link>
+          </BreadcrumbLink>
         </BreadcrumbItem>
 
         {segments.map((segment, index) => {
