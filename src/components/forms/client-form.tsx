@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { redirect } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
+import { z } from "zod";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+
+import { redirect } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { getClientTypes, postClient } from "@/lib/api/clients";
 import {
   Form,
   FormControl,
@@ -23,8 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { createClient, getClientTypes } from "@/services/actions/client";
 
 interface ClientType {
   client_type_id: number;
@@ -47,11 +48,9 @@ export function NewClientForm() {
   const [clientTypes, setClientTypes] = useState<ClientType[]>([]);
 
   useEffect(() => {
-    const fetchClientTypes = async () => {
-      const data = await getClientTypes();
-      setClientTypes(data);
-    };
-    fetchClientTypes();
+    getClientTypes()
+      .then((res) => setClientTypes(res.data))
+      .catch((err) => toast.error(err.message, { duration: 12000 }));
   }, []);
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -68,7 +67,7 @@ export function NewClientForm() {
       client_type: data.type,
     };
 
-    createClient(client);
+    postClient(client);
 
     redirect("/clientes");
   }

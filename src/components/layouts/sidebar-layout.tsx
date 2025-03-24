@@ -1,8 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { FileText, FolderOpen, Home, Package, Users } from "lucide-react";
 
+import Link from "next/link";
+import { AppIcon } from "@/components/svg/app-icon";
+import { AppWordmark } from "@/components/svg/app-wordmark";
 import {
   Sidebar,
   SidebarContent,
@@ -15,8 +17,6 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { AppIcon } from "@/components/svg/app-icon";
-import { AppWordmark } from "@/components/svg/app-wordmark";
 
 const items = [
   {

@@ -1,15 +1,14 @@
-import type { Metadata } from "next";
+import type, { Metadata } from "next";
+
 import { cookies } from "next/headers";
-
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
-
-import { ThemeProvider } from "@/components/theme/theme-provider";
-import { AppSidebar } from "@/components/layouts/sidebar-layout";
+import { Geist, Geist_Mono } from "next/font/google";
 import { Header } from "@/components/layouts/header-layout";
+import { AppSidebar } from "@/components/layouts/sidebar-layout";
+import { ThemeProvider } from "@/components/theme/theme-provider";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,7 +52,7 @@ export default async function RootLayout({
             <SidebarInset className="px-5">
               <Header />
               <main className="py-2.5">{children}</main>
-              <Toaster />
+              <Toaster richColors />
             </SidebarInset>
           </SidebarProvider>
         </ThemeProvider>

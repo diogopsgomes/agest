@@ -4,14 +4,13 @@ import { Fragment } from "react";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
+  BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-  BreadcrumbList,
 } from "@/components/ui/breadcrumb";
 
 export function AppBreadcrumb() {

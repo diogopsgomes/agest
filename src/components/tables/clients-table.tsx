@@ -1,6 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
+import { toast } from "sonner";
+import { Search } from "lucide-react";
+
+import { Input } from "@/components/ui/input";
+import { getClients } from "@/lib/api/clients";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -10,10 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Search } from "lucide-react";
-import { getClients } from "@/services/actions/client";
 
 interface Client {
   client_id: string;
@@ -28,15 +31,13 @@ interface Client {
 export default function ClientsTable() {
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchClients() {
-      const data = await getClients();
-      setClients(data);
-      setIsLoading(false);
-    }
-    fetchClients();
+    getClients()
+      .then((res) => setClients(res.data))
+      .catch((err) => toast.error(err.message, { duration: 12000 }))
+      .finally(() => setLoading(false));
   }, []);
 
   const filteredClients = clients.filter((client) =>
@@ -78,8 +79,8 @@ export default function ClientsTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {isLoading
-            ? Array(10)
+          {loading
+            ? Array(15)
                 .fill(0)
                 .map((_, idx) => (
                   <TableRow key={idx}>

@@ -2,9 +2,8 @@
 
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-
-import { AppBreadcrumb } from "@/components/layouts/breadcrumb-layout";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { AppBreadcrumb } from "@/components/layouts/breadcrumb-layout";
 
 export function Header() {
   return (
