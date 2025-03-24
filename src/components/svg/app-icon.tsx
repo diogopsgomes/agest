@@ -1,3 +1,5 @@
+"use client";
+
 import { SVGProps } from "react";
 
 export function AppIcon(props: SVGProps<SVGSVGElement>) {

@@ -1,8 +1,10 @@
+"use client";
+
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
-import { AppBreadcrumb } from "@/components/app-breadcrumb";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { AppBreadcrumb } from "@/components/layouts/breadcrumb-layout";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export function Header() {
   return (

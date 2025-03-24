@@ -4,16 +4,12 @@ import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import {
-  SidebarContent,
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
-import { ThemeProvider } from "@/components/theme-provider";
-import { AppSidebar } from "@/components/app-sidebar";
-import { Header } from "@/components/header";
+import { ThemeProvider } from "@/components/theme/theme-provider";
+import { AppSidebar } from "@/components/layouts/sidebar-layout";
+import { Header } from "@/components/layouts/header-layout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

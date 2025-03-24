@@ -25,7 +25,7 @@ interface Client {
   tlf: string;
 }
 
-export default function ClientsList() {
+export default function ClientsTable() {
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
