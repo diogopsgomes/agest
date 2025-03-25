@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 
 import { toast } from "sonner";
-import { Search } from "lucide-react";
+import { RefreshCw, Search } from "lucide-react";
 
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { getClients } from "@/lib/api/clients";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -29,15 +31,22 @@ interface Client {
 }
 
 export default function ClientsTable() {
+  const router = useRouter();
+
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchClients = () => {
+    setLoading(true);
     getClients()
       .then((res) => setClients(res.data))
       .catch((err) => toast.error(err.message, { duration: 12000 }))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchClients();
   }, []);
 
   const filteredClients = clients.filter((client) =>
@@ -63,6 +72,13 @@ export default function ClientsTable() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full max-w-md"
           />
+          <Button
+            variant="outline"
+            onClick={() => fetchClients()}
+          >
+            <RefreshCw />
+            <span>Atualizar</span>
+          </Button>
         </div>
       </div>
 
@@ -83,7 +99,14 @@ export default function ClientsTable() {
             ? Array(15)
                 .fill(0)
                 .map((_, idx) => (
-                  <TableRow key={idx}>
+                  <TableRow
+                    key={idx}
+                    className={
+                      idx % 2 === 0
+                        ? "bg-muted/40 hover:bg-muted"
+                        : "bg-muted/0 hover:bg-muted"
+                    }
+                  >
                     <TableCell>
                       <Skeleton className="h-5 w-full" />
                     </TableCell>
@@ -104,8 +127,18 @@ export default function ClientsTable() {
                     </TableCell>
                   </TableRow>
                 ))
-            : filteredClients.map((client) => (
-                <TableRow key={client.client_id}>
+            : filteredClients.map((client, idx) => (
+                <TableRow
+                  key={client.client_id}
+                  onClick={() =>
+                    router.push(`/clientes/perfil/${client.client_id}`)
+                  }
+                  className={
+                    idx % 2 === 0
+                      ? "bg-muted/40 hover:bg-muted"
+                      : "bg-muted/0 hover:bg-muted"
+                  }
+                >
                   <TableCell className="font-medium">{client.name}</TableCell>
                   <TableCell className="font-medium">
                     {client.company}

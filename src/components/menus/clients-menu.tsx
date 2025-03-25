@@ -11,7 +11,8 @@ export default function ClientsMenu() {
       <div className="flex items-center gap-2">
         <Link href="/clientes/novo">
           <Button variant="outline">
-            <Plus /> Novo cliente
+            <Plus />
+            <span>Novo cliente</span>
           </Button>
         </Link>
       </div>
