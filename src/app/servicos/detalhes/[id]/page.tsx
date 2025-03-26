@@ -1,7 +1,7 @@
 import { EditClientForm } from "@/components/forms/client-forms";
 import ClientMenu from "@/components/menus/client-menu";
 
-export default async function PerfilCliente({
+export default async function DetalhesServico({
   params,
 }: {
   params: { id: string };
@@ -10,7 +10,7 @@ export default async function PerfilCliente({
 
   return (
     <>
-      <h1 className="text-2xl font-semibold mb-8">Perfil de cliente</h1>
+      <h1 className="text-2xl font-semibold mb-8">Serviço</h1>
       <ClientMenu clientId={String(params.id)} />
       <EditClientForm clientId={String(params.id)} />
     </>

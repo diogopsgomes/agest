@@ -1,8 +1,8 @@
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export async function getClients() {
+export async function getServices() {
   try {
-    const res = await fetch(`${base_url}/clients`, {
+    const res = await fetch(`${base_url}/services`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -17,9 +17,9 @@ export async function getClients() {
   }
 }
 
-export async function getClient(id: any) {
+export async function getService(id: any) {
   try {
-    const res = await fetch(`${base_url}/clients/${id}`, {
+    const res = await fetch(`${base_url}/services/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -34,16 +34,16 @@ export async function getClient(id: any) {
   }
 }
 
-export async function postClient(client: any) {
+export async function postService(service: any) {
   try {
-    console.log(JSON.stringify(client));
+    console.log(JSON.stringify(service));
 
-    const res = await fetch(`${base_url}/clients/add`, {
+    const res = await fetch(`${base_url}/services/add`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(client),
+      body: JSON.stringify(service),
     });
 
     if (!res.ok) throw new Error(res.statusText);
@@ -54,14 +54,14 @@ export async function postClient(client: any) {
   }
 }
 
-export async function putClient(id: any, client: any) {
+export async function putService(id: any, service: any) {
   try {
-    const res = await fetch(`${base_url}/clients/update/${id}`, {
+    const res = await fetch(`${base_url}/services/update/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(client),
+      body: JSON.stringify(service),
     });
 
     if (!res.ok) throw new Error(res.statusText);
@@ -72,27 +72,10 @@ export async function putClient(id: any, client: any) {
   }
 }
 
-export async function deleteClient(id: any) {
+export async function deleteService(id: any) {
   try {
-    const res = await fetch(`${base_url}/clients/remove/${id}`, {
+    const res = await fetch(`${base_url}/services/remove/${id}`, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!res.ok) throw new Error(res.statusText);
-
-    return await res.json();
-  } catch (err: any) {
-    throw new Error(err.message);
-  }
-}
-
-export async function getClientTypes() {
-  try {
-    const res = await fetch(`${base_url}/client-types`, {
-      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },

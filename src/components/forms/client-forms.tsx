@@ -6,7 +6,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -63,13 +63,15 @@ const FormSchema = z.object({
     .string({ required_error: "O telefone do cliente é obrigatório" })
     /* .nonempty({ message: "O telefone do cliente é obrigatório" }) */
     .optional(),
-  type: z
+  client_type: z
     .string({ required_error: "O tipo de cliente é obrigatório" })
     /* .nonempty({ message: "O tipo de cliente é obrigatório" }) */
     .optional(),
 });
 
 export function NewClientForm() {
+  const router = useRouter();
+
   const [clientTypes, setClientTypes] = useState<ClientType[]>([]);
 
   useEffect(() => {
@@ -85,16 +87,20 @@ export function NewClientForm() {
   function onSubmit(data: z.infer<typeof FormSchema>) {
     const client = {
       name: data.name,
+      company: data.company,
       vat: data.vat,
       email: data.email,
       tlm: data.tlm,
       tlf: data.tlf,
-      client_type: data.type,
+      client_type: data.client_type,
     };
 
-    postClient(client);
-
-    redirect("/clientes");
+    postClient(client)
+      .then(() => {
+        toast.success("Cliente criado!");
+        router.push("/clientes");
+      })
+      .catch((err) => toast.error(err.message));
   }
 
   return (
@@ -211,13 +217,13 @@ export function NewClientForm() {
         </div>
         <FormField
           control={form.control}
-          name="type"
+          name="client_type"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Tipo de Cliente</FormLabel>
               <Select
                 onValueChange={field.onChange}
-                defaultValue={field.value}
+                value={field.value}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -265,8 +271,8 @@ export function EditClientForm({ clientId }: { clientId: string }) {
           email: res.data.email ? res.data.email : "",
           tlm: res.data.tlm ? res.data.tlm : "",
           tlf: res.data.tlf ? res.data.tlf : "",
-          type: String(res.data.client_type_id)
-            ? String(res.data.client_type_id)
+          client_type: res.data.client_type.id
+            ? String(res.data.client_type.id)
             : "",
         });
       })
@@ -275,10 +281,7 @@ export function EditClientForm({ clientId }: { clientId: string }) {
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     putClient(clientId, data)
-      .then((res) => {
-        toast.success("Cliente atualizado!");
-        /* toast.info(JSON.stringify(res)); */
-      })
+      .then(() => toast.success("Cliente atualizado!"))
       .catch((err) => toast.error(err.message));
   }
 
@@ -396,13 +399,13 @@ export function EditClientForm({ clientId }: { clientId: string }) {
         </div>
         <FormField
           control={form.control}
-          name="type"
+          name="client_type"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Tipo de Cliente</FormLabel>
               <Select
                 onValueChange={field.onChange}
-                defaultValue={field.value}
+                value={field.value}
               >
                 <FormControl>
                   <SelectTrigger>

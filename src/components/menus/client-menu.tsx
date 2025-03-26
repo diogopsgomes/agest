@@ -1,9 +1,13 @@
 "use client";
 
-import { Pencil, Trash2 } from "lucide-react";
+import { useState } from "react";
 
+import { toast } from "sonner";
+import { FilePlus, Trash2 } from "lucide-react";
+
+import { useRouter } from "next/navigation";
+import { deleteClient } from "@/lib/api/clients";
 import { Button, buttonVariants } from "@/components/ui/button";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,24 +17,28 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export default function ClientMenu() {
+export default function ClientMenu({ clientId }: { clientId: string }) {
+  const router = useRouter();
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
   return (
     <div className="flex justify-between items-center gap-2 mb-8">
       <div className="flex items-center gap-2">
         <Button variant="outline">
-          <Pencil />
-          <span>Editar cliente</span>
+          <FilePlus />
+          <span>Novo orçamento</span>
         </Button>
-        <AlertDialog>
-          <AlertDialogTrigger>
-            <Button variant="destructive">
-              <Trash2 />
-              <span>Eliminar cliente</span>
-            </Button>
-          </AlertDialogTrigger>
+        <Button
+          variant="destructive"
+          onClick={() => setShowDeleteDialog(true)}
+        >
+          <Trash2 />
+          <span>Eliminar cliente</span>
+        </Button>
+        <AlertDialog open={showDeleteDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
@@ -42,8 +50,19 @@ export default function ClientMenu() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>
+                Cancelar
+              </AlertDialogCancel>
               <AlertDialogAction
+                onClick={() =>
+                  deleteClient(clientId)
+                    .then((res) => {
+                      toast.success("Cliente eliminado");
+                      router.push("/clientes");
+                    })
+                    .catch((err) => toast.error(err.message))
+                    .finally(() => setShowDeleteDialog(false))
+                }
                 className={buttonVariants({ variant: "destructive" })}
               >
                 Eliminar cliente
