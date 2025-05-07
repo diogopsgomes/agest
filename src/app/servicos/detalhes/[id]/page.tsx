@@ -1,5 +1,6 @@
-import { EditClientForm } from "@/components/forms/client-forms";
-import ClientMenu from "@/components/menus/client-menu";
+import { EditServiceForm } from "@/components/forms/service-forms";
+import ServiceMenu from "@/components/menus/service-menu";
+import PageTitle from "@/components/page-title";
 
 export default async function DetalhesServico({
   params,
@@ -10,9 +11,9 @@ export default async function DetalhesServico({
 
   return (
     <>
-      <h1 className="text-2xl font-semibold mb-8">Serviço</h1>
-      <ClientMenu clientId={String(params.id)} />
-      <EditClientForm clientId={String(params.id)} />
+      <PageTitle title="Serviço" />
+      <ServiceMenu serviceId={String(params.id)} />
+      <EditServiceForm serviceId={String(params.id)} />
     </>
   );
 }

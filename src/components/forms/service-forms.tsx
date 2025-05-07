@@ -11,11 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  getClient,
-  getClientTypes,
-  postClient,
-  putClient,
-} from "@/lib/api/clients";
+  getService,
+  getServiceRates,
+  postService,
+  putService,
+} from "@/lib/api/services";
 import {
   Form,
   FormControl,
@@ -31,74 +31,81 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getCategories } from "@/lib/api/categories";
 
-interface ClientType {
-  client_type_id: number;
+interface ServiceRate {
+  service_rate_id: number;
+  name: string;
+  price: number;
+}
+
+interface Category {
+  category_id: number;
   name: string;
 }
 
 const FormSchema = z.object({
+  sku: z
+    .string({ required_error: "O SKU do serviço é obrigatório" })
+    .nonempty({ message: "O SKU do serviço é obrigatório" }),
   name: z
-    .string({ required_error: "O nome do cliente é obrigatório" })
-    .nonempty({ message: "O nome do cliente é obrigatório" }),
-  company: z
+    .string({ required_error: "O nome do serviço é obrigatório" })
+    .nonempty({ message: "O nome do serviço é obrigatório" }),
+  hours_default: z
     .string({
-      required_error: "A designação da empresa do cliente é obrigatória",
+      required_error:
+        "A quantidade de horas por defeito do serviço é obrigatória",
     })
-    .nonempty({ message: "A designação da empresa do cliente é obrigatória" }),
-  vat: z
-    .string({ required_error: "O NIPC do cliente é obrigatório" })
-    /* .nonempty({ message: "O NIPC do cliente é obrigatório" }) */
-    .optional(),
-  email: z
-    .string({ required_error: "O email do cliente é obrigatório" })
-    /* .nonempty({ message: "O email do cliente é obrigatório" }) */
-    /* .email({ message: "Endereço de email inválido." }) */
-    .optional(),
-  tlm: z
-    .string({ required_error: "O telemóvel do cliente é obrigatório" })
-    /* .nonempty({ message: "O telemóvel do cliente é obrigatório" }) */
-    .optional(),
-  tlf: z
-    .string({ required_error: "O telefone do cliente é obrigatório" })
-    /* .nonempty({ message: "O telefone do cliente é obrigatório" }) */
-    .optional(),
-  client_type: z
-    .string({ required_error: "O tipo de cliente é obrigatório" })
-    /* .nonempty({ message: "O tipo de cliente é obrigatório" }) */
-    .optional(),
+    .nonempty({
+      message: "A quantidade de horas por defeito do serviço é obrigatória",
+    }),
+  service_rate: z
+    .string({ required_error: "A taxa de serviço é obrigatória" })
+    .nonempty({ message: "A taxa de serviço é obrigatória" }),
+  category: z
+    .string({ required_error: "A categoria é obrigatória" })
+    .nonempty({ message: "A categoria é obrigatória" }),
 });
 
-export function NewClientForm() {
+export function NewServiceForm() {
   const router = useRouter();
 
-  const [clientTypes, setClientTypes] = useState<ClientType[]>([]);
+  const [serviceRates, setServiceRates] = useState<ServiceRate[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    getClientTypes()
-      .then((res) => setClientTypes(res.data))
+    getServiceRates()
+      .then((res) => setServiceRates(res.data))
+      .catch((err) => toast.error(err.message, { duration: 12000 }));
+    getCategories()
+      .then((res) => setCategories(res.data))
       .catch((err) => toast.error(err.message, { duration: 12000 }));
   }, []);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      sku: "",
+      name: "",
+      hours_default: "",
+      service_rate: "",
+      category: "",
+    },
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    const client = {
+    const service = {
+      sku: data.sku,
       name: data.name,
-      company: data.company,
-      vat: data.vat,
-      email: data.email,
-      tlm: data.tlm,
-      tlf: data.tlf,
-      client_type: data.client_type,
+      hours_default: data.hours_default,
+      service_rate: data.service_rate,
+      category: data.category,
     };
 
-    postClient(client)
+    postService(service)
       .then(() => {
-        toast.success("Cliente criado!");
-        router.push("/clientes");
+        toast.success("Serviço criado!");
+        router.push("/servicos");
       })
       .catch((err) => toast.error(err.message));
   }
@@ -109,51 +116,17 @@ export function NewClientForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-5/6 sm:w-2/3 space-y-6"
       >
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome</FormLabel>
-              <FormControl>
-                <Input
-                  className="text-sm"
-                  placeholder="Insira o nome do cliente"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="company"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Empresa</FormLabel>
-              <FormControl>
-                <Input
-                  className="text-sm"
-                  placeholder="Insira a designação da empresa do cliente"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid lg:grid-cols-6 gap-6">
           <FormField
             control={form.control}
-            name="vat"
+            name="sku"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>NIPC</FormLabel>
+                <FormLabel>SKU</FormLabel>
                 <FormControl>
                   <Input
                     className="text-sm"
-                    placeholder="Insira o NIPC do cliente"
+                    placeholder="Insira o SKU do serviço"
                     {...field}
                   />
                 </FormControl>
@@ -163,33 +136,14 @@ export function NewClientForm() {
           />
           <FormField
             control={form.control}
-            name="email"
+            name="name"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
+              <FormItem className="lg:col-span-4">
+                <FormLabel>Nome</FormLabel>
                 <FormControl>
                   <Input
                     className="text-sm"
-                    placeholder="Insira o email do cliente"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div className="grid lg:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="tlm"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Telemóvel</FormLabel>
-                <FormControl>
-                  <Input
-                    className="text-sm"
-                    placeholder="Insira o número de telemóvel do cliente"
+                    placeholder="Insira o nome do serviço"
                     {...field}
                   />
                 </FormControl>
@@ -199,14 +153,14 @@ export function NewClientForm() {
           />
           <FormField
             control={form.control}
-            name="tlf"
+            name="hours_default"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Telefone</FormLabel>
+                <FormLabel>Horas por defeito</FormLabel>
                 <FormControl>
                   <Input
                     className="text-sm"
-                    placeholder="Insira o número de telefone do cliente"
+                    placeholder="Insira o número de horas por defeito do serviço"
                     {...field}
                   />
                 </FormControl>
@@ -217,26 +171,26 @@ export function NewClientForm() {
         </div>
         <FormField
           control={form.control}
-          name="client_type"
+          name="service_rate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tipo de Cliente</FormLabel>
+              <FormLabel>Taxa de Serviço</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 value={field.value}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione o tipo de cliente" />
+                    <SelectValue placeholder="Selecione a taxa de serviço" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {clientTypes.map((type) => (
+                  {serviceRates.map((rate) => (
                     <SelectItem
-                      key={type.client_type_id}
-                      value={String(type.client_type_id)}
+                      key={rate.service_rate_id}
+                      value={String(rate.service_rate_id)}
                     >
-                      {type.name}
+                      {rate.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -245,43 +199,83 @@ export function NewClientForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Adicionar cliente</Button>
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Categoria</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a categoria" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem
+                      key={category.category_id}
+                      value={String(category.category_id)}
+                    >
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Adicionar serviço</Button>
       </form>
     </Form>
   );
 }
 
-export function EditClientForm({ clientId }: { clientId: string }) {
-  const [clientTypes, setClientTypes] = useState<ClientType[]>([]);
+export function EditServiceForm({ serviceId }: { serviceId: string }) {
+  const [serviceRates, setServiceRates] = useState<ServiceRate[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      sku: "",
+      name: "",
+      hours_default: "",
+      service_rate: "",
+    },
   });
 
   useEffect(() => {
-    getClientTypes()
-      .then((res) => setClientTypes(res.data))
-      .catch((err) => toast.error(err.message));
-    getClient(clientId)
+    getServiceRates()
+      .then((res) => setServiceRates(res.data))
+      .catch((err) => toast.error(err.message, { duration: 12000 }));
+    getCategories()
+      .then((res) => setCategories(res.data))
+      .catch((err) => toast.error(err.message, { duration: 12000 }));
+    getService(serviceId)
       .then((res) => {
         form.reset({
+          sku: res.data.sku ? res.data.sku : "",
           name: res.data.name ? res.data.name : "",
-          company: res.data.company ? res.data.company : "",
-          vat: res.data.vat ? res.data.vat : "",
-          email: res.data.email ? res.data.email : "",
-          tlm: res.data.tlm ? res.data.tlm : "",
-          tlf: res.data.tlf ? res.data.tlf : "",
-          client_type: res.data.client_type.id
-            ? String(res.data.client_type.id)
+          hours_default: res.data.hours_default
+            ? String(res.data.hours_default)
             : "",
+          service_rate: res.data.service_rate.id
+            ? String(res.data.service_rate.id)
+            : "",
+          category: res.data.category.id ? String(res.data.category.id) : "",
         });
       })
       .catch((err) => toast.error(err.message));
-  }, [clientId, form]);
+  }, [serviceId, form]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    putClient(clientId, data)
-      .then(() => toast.success("Cliente atualizado!"))
+    putService(serviceId, data)
+      .then(() => toast.success("Serviço atualizado!"))
       .catch((err) => toast.error(err.message));
   }
 
@@ -291,51 +285,17 @@ export function EditClientForm({ clientId }: { clientId: string }) {
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-5/6 sm:w-2/3 space-y-6"
       >
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome</FormLabel>
-              <FormControl>
-                <Input
-                  className="text-sm"
-                  placeholder="Nome do cliente"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="company"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Empresa</FormLabel>
-              <FormControl>
-                <Input
-                  className="text-sm"
-                  placeholder="Empresa do cliente"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid lg:grid-cols-6 gap-6">
           <FormField
             control={form.control}
-            name="vat"
+            name="sku"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>NIPC</FormLabel>
+                <FormLabel>SKU</FormLabel>
                 <FormControl>
                   <Input
                     className="text-sm"
-                    placeholder="NIPC do cliente"
+                    placeholder="Insira o SKU do serviço"
                     {...field}
                   />
                 </FormControl>
@@ -345,14 +305,31 @@ export function EditClientForm({ clientId }: { clientId: string }) {
           />
           <FormField
             control={form.control}
-            name="email"
+            name="name"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
+              <FormItem className="lg:col-span-4">
+                <FormLabel>Nome</FormLabel>
                 <FormControl>
                   <Input
                     className="text-sm"
-                    placeholder="Email do cliente"
+                    placeholder="Insira o nome do serviço"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="hours_default"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Horas por defeito</FormLabel>
+                <FormControl>
+                  <Input
+                    className="text-sm"
+                    placeholder="Insira o número de horas por defeito do serviço"
                     {...field}
                   />
                 </FormControl>
@@ -361,64 +338,29 @@ export function EditClientForm({ clientId }: { clientId: string }) {
             )}
           />
         </div>
-        <div className="grid lg:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="tlm"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Telemóvel</FormLabel>
-                <FormControl>
-                  <Input
-                    className="text-sm"
-                    placeholder="Telemóvel do cliente"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="tlf"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Telefone</FormLabel>
-                <FormControl>
-                  <Input
-                    className="text-sm"
-                    placeholder="Telefone do cliente"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+
         <FormField
           control={form.control}
-          name="client_type"
+          name="service_rate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tipo de Cliente</FormLabel>
+              <FormLabel>Taxa de Serviço</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 value={field.value}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione o tipo de cliente" />
+                    <SelectValue placeholder="Selecione a taxa de serviço" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {clientTypes.map((type) => (
+                  {serviceRates.map((rate) => (
                     <SelectItem
-                      key={type.client_type_id}
-                      value={String(type.client_type_id)}
+                      key={rate.service_rate_id}
+                      value={String(rate.service_rate_id)}
                     >
-                      {type.name}
+                      {rate.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -427,7 +369,37 @@ export function EditClientForm({ clientId }: { clientId: string }) {
             </FormItem>
           )}
         />
-        <Button type="submit">Atualizar cliente</Button>
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Categoria</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a categoria" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem
+                      key={category.category_id}
+                      value={String(category.category_id)}
+                    >
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Atualizar serviço</Button>
       </form>
     </Form>
   );

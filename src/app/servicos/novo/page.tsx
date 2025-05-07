@@ -1,10 +1,11 @@
-import { NewClientForm } from "@/components/forms/client-forms";
+import { NewServiceForm } from "@/components/forms/service-forms";
+import PageTitle from "@/components/page-title";
 
 export default function NovoServico() {
   return (
     <>
-      <h1 className="text-2xl font-semibold mb-8">Novo serviço</h1>
-      <NewClientForm />
+      <PageTitle title="Novo Serviço" />
+      <NewServiceForm />
     </>
   );
 }

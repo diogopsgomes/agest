@@ -125,6 +125,10 @@
   }
 }
 
+body {
+  font-family: var(--font-geist-sans);
+}
+
 button:not(:disabled):not(.disabled),
 [role="menuitem"]:not(:disabled):not(.disabled) {
   cursor: pointer;

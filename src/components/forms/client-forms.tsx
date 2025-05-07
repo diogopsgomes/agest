@@ -82,6 +82,15 @@ export function NewClientForm() {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      name: "",
+      company: "",
+      vat: "",
+      email: "",
+      tlm: "",
+      tlf: "",
+      client_type: "",
+    },
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -256,6 +265,15 @@ export function EditClientForm({ clientId }: { clientId: string }) {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      name: "",
+      company: "",
+      vat: "",
+      email: "",
+      tlm: "",
+      tlf: "",
+      client_type: "",
+    },
   });
 
   useEffect(() => {
