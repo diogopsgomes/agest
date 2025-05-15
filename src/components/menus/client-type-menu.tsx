@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
-import { deleteUser } from "@/lib/api/users";
+import { deleteClientType } from "@/lib/api/clients";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -19,7 +19,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export default function UserMenu({ userId }: { userId: string }) {
+export default function ClientTypeMenu({
+  clientTypeId,
+}: {
+  clientTypeId: string;
+}) {
   const router = useRouter();
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -32,17 +36,17 @@ export default function UserMenu({ userId }: { userId: string }) {
           onClick={() => setShowDeleteDialog(true)}
         >
           <Trash2 />
-          <span>Eliminar utilizador</span>
+          <span>Eliminar tipo de cliente</span>
         </Button>
         <AlertDialog open={showDeleteDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                De certeza que pretende eliminar o utilizador?
+                De certeza que pretende eliminar o tipo de cliente?
               </AlertDialogTitle>
               <AlertDialogDescription>
                 Esta ação não pode ser anulada. Isto irá eliminar
-                permanentemente o utilizador e remover os seus dados.
+                permanentemente o tipo de cliente e remover os seus dados.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -51,17 +55,17 @@ export default function UserMenu({ userId }: { userId: string }) {
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={() =>
-                  deleteUser(userId)
+                  deleteClientType(clientTypeId)
                     .then((res) => {
-                      toast.success("Utilizador eliminado");
-                      router.push("/utilizadores");
+                      toast.success("Tipo de cliente eliminado");
+                      router.push("/clientes/tipos");
                     })
                     .catch((err) => toast.error(err.message))
                     .finally(() => setShowDeleteDialog(false))
                 }
                 className={buttonVariants({ variant: "destructive" })}
               >
-                Eliminar utilizador
+                Eliminar tipo de cliente
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

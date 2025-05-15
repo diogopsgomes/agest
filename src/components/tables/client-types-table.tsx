@@ -7,7 +7,7 @@ import { RefreshCw, Search } from "lucide-react";
 
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { getClients } from "@/lib/api/clients";
+import { getClientTypes } from "@/lib/api/clients";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -20,44 +20,36 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface Client {
-  client_id: string;
+interface ClientType {
+  client_type_id: string;
+  sku: string;
   name: string;
-  company: string;
-  vat: string;
-  email: string;
-  tlm: string;
-  tlf: string;
+  price_adjust: number;
 }
 
-export default function ClientsTable() {
+export default function ClientTypesTable() {
   const router = useRouter();
 
-  const [clients, setClients] = useState<Client[]>([]);
+  const [clientTypes, setClientTypes] = useState<ClientType[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const fetchClients = () => {
+  const fetchClientTypes = () => {
     setLoading(true);
-    getClients()
-      .then((res) => setClients(res.data))
+    getClientTypes()
+      .then((res) => setClientTypes(res.data))
       .catch((err) => toast.error(err.message, { duration: 12000 }))
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    fetchClients();
+    fetchClientTypes();
   }, []);
 
-  const filteredClients = clients.filter((client) =>
-    [
-      client.name,
-      client.company,
-      client.vat,
-      client.email,
-      client.tlm,
-      client.tlf,
-    ].some((field) => field?.toLowerCase().includes(search.toLowerCase()))
+  const filteredClientTypes = clientTypes.filter((clientType) =>
+    [clientType.sku, clientType.name].some((field) =>
+      field?.toLowerCase().includes(search.toLowerCase())
+    )
   );
 
   return (
@@ -74,7 +66,7 @@ export default function ClientsTable() {
           />
           <Button
             variant="outline"
-            onClick={() => fetchClients()}
+            onClick={() => fetchClientTypes()}
           >
             <RefreshCw />
             <span>Atualizar</span>
@@ -83,15 +75,14 @@ export default function ClientsTable() {
       </div>
 
       <Table>
-        <TableCaption className="sr-only">Lista de Clientes</TableCaption>
+        <TableCaption className="sr-only">
+          Lista de Tipos de Cliente
+        </TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[25%]">Nome</TableHead>
-            <TableHead className="w-[25%]">Empresa</TableHead>
-            <TableHead>NIPC</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Telemóvel</TableHead>
-            <TableHead>Telefone</TableHead>
+            <TableHead className="w-[10%]">SKU</TableHead>
+            <TableHead className="w-[80%]">Nome</TableHead>
+            <TableHead className="w-[10%]">Ajuste</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -116,35 +107,27 @@ export default function ClientsTable() {
                     <TableCell>
                       <Skeleton className="h-5 w-full" />
                     </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-full" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-full" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-full" />
-                    </TableCell>
                   </TableRow>
                 ))
-            : filteredClients.map((client, idx) => (
+            : filteredClientTypes.map((clientType, idx) => (
                 <TableRow
-                  key={client.client_id}
-                  onClick={() => router.push(`/clientes/${client.client_id}`)}
+                  key={clientType.client_type_id}
+                  onClick={() =>
+                    router.push(`/clientes/tipos/${clientType.client_type_id}`)
+                  }
                   className={
                     idx % 2 === 0
                       ? "bg-muted/40 hover:bg-muted"
                       : "bg-muted/0 hover:bg-muted"
                   }
                 >
-                  <TableCell className="font-medium">{client.name}</TableCell>
                   <TableCell className="font-medium">
-                    {client.company}
+                    {clientType.sku}
                   </TableCell>
-                  <TableCell>{client.vat}</TableCell>
-                  <TableCell>{client.email}</TableCell>
-                  <TableCell>{client.tlm}</TableCell>
-                  <TableCell>{client.tlf}</TableCell>
+                  <TableCell className="font-medium">
+                    {clientType.name}
+                  </TableCell>
+                  <TableCell>{clientType.price_adjust}</TableCell>
                 </TableRow>
               ))}
         </TableBody>
