@@ -1,6 +1,6 @@
 'use client';
 
-import { Percent, Plus } from 'lucide-react';
+import { LayoutGrid, Percent, Plus } from 'lucide-react';
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,12 @@ export default function ServicesMenu() {
 					<Button variant="outline">
 						<Percent />
 						<span>Tarifas de serviço</span>
+					</Button>
+				</Link>
+				<Link href="/servicos/categorias">
+					<Button variant="outline">
+						<LayoutGrid />
+						<span>Categorias</span>
 					</Button>
 				</Link>
 			</div>
