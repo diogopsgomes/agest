@@ -5,14 +5,14 @@ import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-export default function CategoriesMenu() {
+export default function QuotesMenu() {
 	return (
 		<div className="flex justify-between items-center gap-2 mb-8">
 			<div className="flex items-center gap-2">
-				<Link href="/categorias/nova">
+				<Link href="/orcamentos/novo">
 					<Button variant="outline">
 						<Plus />
-						<span>Nova categoria</span>
+						<span>Novo orçamento</span>
 					</Button>
 				</Link>
 			</div>

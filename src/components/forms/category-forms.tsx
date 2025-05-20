@@ -35,7 +35,7 @@ export function NewCategoryForm() {
 		postCategory(category)
 			.then(() => {
 				toast.success('Categoria criada!');
-				router.push('/servicos/categorias');
+				router.push('/categorias');
 			})
 			.catch((err) => toast.error(err.message));
 	}

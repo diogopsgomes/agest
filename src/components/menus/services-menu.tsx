@@ -21,7 +21,7 @@ export default function ServicesMenu() {
 						<span>Tarifas de serviço</span>
 					</Button>
 				</Link>
-				<Link href="/servicos/categorias">
+				<Link href="/categorias">
 					<Button variant="outline">
 						<LayoutGrid />
 						<span>Categorias</span>

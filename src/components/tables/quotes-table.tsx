@@ -7,36 +7,42 @@ import { RefreshCw, Search } from 'lucide-react';
 
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
-import { getCategories } from '@/lib/api/categories';
+import { getQuotes } from '@/lib/api/quotes';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-interface Category {
-	category_id: string;
-	name: string;
+interface Quote {
+	quote_id: string;
+	creation_date: string;
+	title: string;
+	discount: string;
+	total: string;
+	client: {
+		name: string;
+	};
 }
 
-export default function CategoriesTable() {
+export default function QuotesTable() {
 	const router = useRouter();
 
-	const [categories, setCategories] = useState<Category[]>([]);
+	const [quotes, setQuotes] = useState<Quote[]>([]);
 	const [search, setSearch] = useState('');
 	const [loading, setLoading] = useState(true);
 
-	const fetchCategories = () => {
+	const fetchQuotes = () => {
 		setLoading(true);
-		getCategories()
-			.then((res) => setCategories(res.data))
+		getQuotes()
+			.then((res) => setQuotes(res.data))
 			.catch((err) => toast.error(err.message, { duration: 12000 }))
 			.finally(() => setLoading(false));
 	};
 
 	useEffect(() => {
-		fetchCategories();
+		fetchQuotes();
 	}, []);
 
-	const filteredCategories = categories.filter((category) => [category.name].some((field) => field?.toLowerCase().includes(search.toLowerCase())));
+	const filteredQuotes = quotes.filter((quote) => [quote.title, quote.client.name].some((field) => field?.toLowerCase().includes(search.toLowerCase())));
 
 	return (
 		<>
@@ -44,7 +50,7 @@ export default function CategoriesTable() {
 				<div className="flex items-center gap-2 flex-1">
 					<Search className="w-5" />
 					<Input type="text" placeholder="Pesquisar..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full max-w-md" />
-					<Button variant="outline" onClick={() => fetchCategories()}>
+					<Button variant="outline" onClick={() => fetchQuotes()}>
 						<RefreshCw />
 						<span>Atualizar</span>
 					</Button>
@@ -52,10 +58,14 @@ export default function CategoriesTable() {
 			</div>
 
 			<Table>
-				<TableCaption className="sr-only">Lista de Categorias</TableCaption>
+				<TableCaption className="sr-only">Lista de Orçamentos</TableCaption>
 				<TableHeader>
 					<TableRow>
-						<TableHead className="w-[80%]">Nome</TableHead>
+						<TableHead className="w-[25%]">Título</TableHead>
+						<TableHead className="w-[25%]">Cliente</TableHead>
+						<TableHead>Data de Criação</TableHead>
+						<TableHead>Desconto</TableHead>
+						<TableHead>Total</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -73,11 +83,24 @@ export default function CategoriesTable() {
 										<TableCell>
 											<Skeleton className="h-5 w-full" />
 										</TableCell>
+										<TableCell>
+											<Skeleton className="h-5 w-full" />
+										</TableCell>
+										<TableCell>
+											<Skeleton className="h-5 w-full" />
+										</TableCell>
+										<TableCell>
+											<Skeleton className="h-5 w-full" />
+										</TableCell>
 									</TableRow>
 								))
-						: filteredCategories.map((category, idx) => (
-								<TableRow key={category.category_id} onClick={() => router.push(`/categorias/${category.category_id}`)} className={idx % 2 === 0 ? 'bg-muted/40 hover:bg-muted' : 'bg-muted/0 hover:bg-muted'}>
-									<TableCell className="font-medium">{category.name}</TableCell>
+						: filteredQuotes.map((quote, idx) => (
+								<TableRow key={quote.quote_id} onClick={() => router.push(`/orcamentos/${quote.quote_id}`)} className={idx % 2 === 0 ? 'bg-muted/40 hover:bg-muted' : 'bg-muted/0 hover:bg-muted'}>
+									<TableCell className="font-medium">{quote.title}</TableCell>
+									<TableCell className="font-medium">{quote.client.name}</TableCell>
+									<TableCell>{quote.creation_date}</TableCell>
+									<TableCell>{quote.discount}</TableCell>
+									<TableCell>{quote.total}</TableCell>
 								</TableRow>
 						  ))}
 				</TableBody>
