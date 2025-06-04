@@ -56,7 +56,6 @@ const FormSchema = z.object({
     .nonempty({ message: "O cliente do orçamento é obrigatório" }),
   user: z
     .string({ required_error: "O utilizador do orçamento é obrigatório" })
-    /* .nonempty({ message: "O NIPC do cliente é obrigatório" }) */
     .optional(),
 });
 

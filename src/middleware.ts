@@ -4,11 +4,15 @@ import {
   type NextRequest,
 } from "next/server";
 
-const publicRoutes = [{ path: "/entrar", whenAuthenticated: "redirect" }];
+import { tokenVerify } from "@/lib/api/auth";
+
+const publicRoutes = [
+  { path: "/entrar", whenAuthenticated: "redirect" },
+] as const;
 
 const REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE = "/entrar";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const publicRoute = publicRoutes.find((route) => route.path === path);
   const authToken = request.cookies.get("token");
@@ -31,6 +35,30 @@ export function middleware(request: NextRequest) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/";
     return NextResponse.redirect(redirectUrl);
+  }
+
+  if (authToken && !publicRoute) {
+    try {
+      const res = await tokenVerify(authToken.value);
+
+      if (res) {
+        return NextResponse.next();
+      } else {
+        const redirectUrl = request.nextUrl.clone();
+        redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
+        const response = NextResponse.redirect(redirectUrl);
+        response.cookies.delete("token");
+        response.cookies.delete("user");
+        return response;
+      }
+    } catch (err) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
+      const response = NextResponse.redirect(redirectUrl);
+      response.cookies.delete("token");
+      response.cookies.delete("user");
+      return response;
+    }
   }
 
   return NextResponse.next();

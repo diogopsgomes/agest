@@ -25,7 +25,7 @@ export default function Autenticacao() {
             </CardTitle>
             <CardDescription>
               <p className="text-muted-foreground text-sm text-center">
-                Insira os seus dados de acesso para entrar.
+                Insira os seus dados de acesso para iniciar sessão.
               </p>
             </CardDescription>
           </div>

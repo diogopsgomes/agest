@@ -55,9 +55,11 @@ export function LoginForm() {
     login(user)
       .then((res) => {
         document.cookie = `token=${res.data.token}; path=/`;
+        document.cookie = `id=${res.data.user_id}; path=/`;
         document.cookie = `name=${res.data.name}; path=/`;
+        document.cookie = `email=${res.data.email}; path=/`;
 
-        toast.success("Autenticação efetuada com sucesso!");
+        toast.success("Sessão iniciada com sucesso!");
         router.push("/");
       })
       .catch((err) => toast.error(err.message));

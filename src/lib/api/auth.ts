@@ -17,3 +17,20 @@ export async function login(user: any) {
     throw new Error(err.message);
   }
 }
+
+export async function tokenVerify(token: string) {
+  try {
+    const res = await fetch(`${base_url}/users/token/verify/${token}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) throw new Error(res.statusText);
+
+    return await res.json();
+  } catch (err: any) {
+    throw new Error(err.message);
+  }
+}
