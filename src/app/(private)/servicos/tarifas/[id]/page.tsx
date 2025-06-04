@@ -1,14 +1,20 @@
-import { EditServiceRateForm } from '@/components/forms/service-rate-forms';
-import ServiceRateMenu from '@/components/menus/service-rate-menu';
+import ServiceRateMenu from "@/components/menus/service-rate-menu";
+import { EditServiceRateForm } from "@/components/forms/service-rate-forms";
 
-export default async function DetalhesTarifaServico({ params }: { params: { id: string } }) {
-	params = await params;
+export default async function DetalhesTarifaServico({
+  params,
+}: {
+  params: { id: string };
+}) {
+  params = await params;
 
-	return (
-		<>
-			<h1 className="text-2xl font-semibold mb-8">Detalhes de tarifa de serviço</h1>
-			<ServiceRateMenu serviceRateId={String(params.id)} />
-			<EditServiceRateForm serviceRateId={String(params.id)} />
-		</>
-	);
+  return (
+    <>
+      <h1 className="text-2xl font-semibold mb-8">
+        Detalhes de tarifa de serviço
+      </h1>
+      <ServiceRateMenu serviceRateId={String(params.id)} />
+      <EditServiceRateForm serviceRateId={String(params.id)} />
+    </>
+  );
 }

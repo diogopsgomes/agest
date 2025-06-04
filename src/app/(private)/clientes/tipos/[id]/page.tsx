@@ -1,5 +1,5 @@
-import { EditClientTypeForm } from "@/components/forms/client-type-forms";
 import ClientTypeMenu from "@/components/menus/client-type-menu";
+import { EditClientTypeForm } from "@/components/forms/client-type-forms";
 
 export default async function DetalhesTipoCliente({
   params,

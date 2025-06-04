@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { getCategories } from "@/lib/api/categories";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   getService,
@@ -31,7 +32,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getCategories } from "@/lib/api/categories";
 
 interface ServiceRate {
   service_rate_id: number;

@@ -1,16 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import { z } from "zod";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 
+import { login } from "@/lib/api/auth";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { login } from "@/lib/api/auth";
 import {
   Form,
   FormControl,
@@ -19,7 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { cookies } from "next/headers";
 
 const FormSchema = z.object({
   email: z

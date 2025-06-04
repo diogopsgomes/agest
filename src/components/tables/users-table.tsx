@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { RefreshCw, Search } from "lucide-react";
 
+import { getUsers } from "@/lib/api/users";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { getUsers } from "@/lib/api/users";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {

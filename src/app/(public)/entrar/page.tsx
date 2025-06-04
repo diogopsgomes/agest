@@ -1,5 +1,4 @@
 import { LoginForm } from "@/components/forms/login-forms";
-import PageTitle from "@/components/page-title";
 import {
   Card,
   CardContent,
@@ -8,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function Auth() {
+export default function Autenticacao() {
   return (
     <div className="flex justify-center items-center flex-col h-svh p-5 gap-10">
       <Card className="w-xl max-w-full">

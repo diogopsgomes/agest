@@ -105,9 +105,7 @@ export default function ServicesTable() {
             : filteredServices.map((service, idx) => (
                 <TableRow
                   key={service.service_id}
-                  onClick={() =>
-                    router.push(`/servicos/detalhes/${service.service_id}`)
-                  }
+                  onClick={() => router.push(`/servicos/${service.service_id}`)}
                   className={
                     idx % 2 === 0
                       ? "bg-muted/40 hover:bg-muted"

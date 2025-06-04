@@ -7,8 +7,8 @@ import { RefreshCw, Search } from "lucide-react";
 
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { getClientTypes } from "@/lib/api/clients";
 import { Button } from "@/components/ui/button";
+import { getClientTypes } from "@/lib/api/clients";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,

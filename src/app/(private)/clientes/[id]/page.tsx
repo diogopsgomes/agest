@@ -1,5 +1,5 @@
-import { EditClientForm } from "@/components/forms/client-forms";
 import ClientMenu from "@/components/menus/client-menu";
+import { EditClientForm } from "@/components/forms/client-forms";
 
 export default async function PerfilCliente({
   params,

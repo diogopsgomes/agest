@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { toast } from "sonner";
-import { FilePlus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
 import { deleteProject } from "@/lib/api/projects";

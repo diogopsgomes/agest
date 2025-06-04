@@ -1,5 +1,5 @@
-import { EditUserForm } from "@/components/forms/user-forms";
 import UserMenu from "@/components/menus/user-menu";
+import { EditUserForm } from "@/components/forms/user-forms";
 
 export default async function PerfilUtilizador({
   params,

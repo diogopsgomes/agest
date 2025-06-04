@@ -9,14 +9,10 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  getProjects,
-  getProject,
-  postProject,
-  putProject,
-} from "@/lib/api/projects";
 import { getCategories, getCategory } from "@/lib/api/categories";
+import { getProject, postProject, putProject } from "@/lib/api/projects";
 import {
   Form,
   FormControl,
@@ -25,7 +21,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
