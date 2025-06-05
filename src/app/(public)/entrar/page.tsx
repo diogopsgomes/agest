@@ -1,3 +1,4 @@
+import { AppIcon } from "@/components/svg/app-icon";
 import { LoginForm } from "@/components/forms/login-forms";
 import {
   Card,
@@ -12,15 +13,11 @@ export default function Autenticacao() {
     <div className="flex justify-center items-center flex-col h-svh p-5 gap-10">
       <Card className="w-xl max-w-full">
         <CardHeader className="gap-10">
-          <img
-            src="../../icon.svg"
-            className="w-10 text-center justify-self-center"
-            alt="AGEST Icon"
-          />
+          <AppIcon className="w-10 text-center justify-self-center" />
           <div className="flex flex-col items-center gap-2">
             <CardTitle>
               <h1 className="text-2xl font-semibold leading-tight tracking-tight text-center">
-                Autenticação
+                Bem-vindo de volta!
               </h1>
             </CardTitle>
             <CardDescription>

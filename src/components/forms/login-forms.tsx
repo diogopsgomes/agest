@@ -2,12 +2,14 @@
 
 import { z } from "zod";
 import { toast } from "sonner";
+import Cookies from "js-cookie";
 import { useForm } from "react-hook-form";
 
 import { login } from "@/lib/api/auth";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -17,6 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Label } from "@radix-ui/react-dropdown-menu";
 
 const FormSchema = z.object({
   email: z
@@ -34,6 +37,7 @@ const FormSchema = z.object({
       message: "A password deve conter pelo menos uma letra maiúscula",
     })
     .regex(/\d/, { message: "A password deve conter pelo menos um número" }),
+  remember: z.boolean().optional(),
 });
 
 export function LoginForm() {
@@ -44,6 +48,7 @@ export function LoginForm() {
     defaultValues: {
       email: "",
       password: "",
+      remember: false,
     },
   });
 
@@ -54,10 +59,17 @@ export function LoginForm() {
     };
     login(user)
       .then((res) => {
-        document.cookie = `token=${res.data.token}; path=/`;
-        document.cookie = `id=${res.data.user_id}; path=/`;
-        document.cookie = `name=${res.data.name}; path=/`;
-        document.cookie = `email=${res.data.email}; path=/`;
+        if (data.remember) {
+          Cookies.set("token", res.data.token, { path: "/", expires: 30 });
+          Cookies.set("id", res.data.user_id, { path: "/", expires: 30 });
+          Cookies.set("name", res.data.name, { path: "/", expires: 30 });
+          Cookies.set("email", res.data.email, { path: "/", expires: 30 });
+        } else {
+          Cookies.set("token", res.data.token, { path: "/" });
+          Cookies.set("id", res.data.user_id, { path: "/" });
+          Cookies.set("name", res.data.name, { path: "/" });
+          Cookies.set("email", res.data.email, { path: "/" });
+        }
 
         toast.success("Sessão iniciada com sucesso!");
         router.push("/");
@@ -102,6 +114,22 @@ export function LoginForm() {
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="remember"
+          render={({ field }) => (
+            <FormItem className="flex items-center">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <FormLabel>Lembrar-me</FormLabel>
               <FormMessage />
             </FormItem>
           )}

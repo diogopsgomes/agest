@@ -1,6 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
+import Cookies from "js-cookie";
 import {
   ChevronsUpDown,
   FileText,
@@ -13,7 +14,6 @@ import {
 } from "lucide-react";
 
 import Link from "next/link";
-import router from "next/router";
 import { AppIcon } from "@/components/svg/app-icon";
 import { AppWordmark } from "@/components/svg/app-wordmark";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -73,26 +73,10 @@ const items = [
   },
 ];
 
-function getCookie(cname: any) {
-  let name = cname + "=";
-  let decodedCookie = decodeURIComponent(document.cookie);
-  let ca = decodedCookie.split(";");
-  for (let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) == " ") {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
-
 const user = {
-  id: getCookie("id"),
-  name: getCookie("name") || "Utilizador",
-  email: getCookie("email") || "utilizador@dominio.tld",
+  id: Cookies.get("id"),
+  name: Cookies.get("name"),
+  email: Cookies.get("email"),
 };
 
 export function AppSidebar() {

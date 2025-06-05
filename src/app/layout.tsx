@@ -2,6 +2,7 @@ import { Metadata } from "next";
 
 import { Toaster } from "@/components/ui/sonner";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 
 import "./globals.css";
 
@@ -33,8 +34,15 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
-        <Toaster richColors />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster richColors />
+        </ThemeProvider>
       </body>
     </html>
   );

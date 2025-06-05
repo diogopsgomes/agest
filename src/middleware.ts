@@ -48,7 +48,9 @@ export async function middleware(request: NextRequest) {
         redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
         const response = NextResponse.redirect(redirectUrl);
         response.cookies.delete("token");
-        response.cookies.delete("user");
+        response.cookies.delete("id");
+        response.cookies.delete("name");
+        response.cookies.delete("email");
         return response;
       }
     } catch (err) {
@@ -56,7 +58,9 @@ export async function middleware(request: NextRequest) {
       redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
       const response = NextResponse.redirect(redirectUrl);
       response.cookies.delete("token");
-      response.cookies.delete("user");
+      response.cookies.delete("id");
+      response.cookies.delete("name");
+      response.cookies.delete("email");
       return response;
     }
   }
