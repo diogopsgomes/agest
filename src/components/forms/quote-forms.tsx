@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 
 import { z } from "zod";
 import { toast } from "sonner";
+import Cookies from "js-cookie";
 import { useForm } from "react-hook-form";
 import { ChevronsUpDown } from "lucide-react";
 
-import { getUsers } from "@/lib/api/users";
 import { useRouter } from "next/navigation";
 import { postQuote } from "@/lib/api/quotes";
 import { Input } from "@/components/ui/input";
@@ -63,16 +63,11 @@ export function NewQuoteForm() {
   const router = useRouter();
 
   const [clients, setClients] = useState<Client[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
   const [openClient, setOpenClient] = useState(false);
-  const [openUser, setOpenUser] = useState(false);
 
   useEffect(() => {
     getClients()
       .then((res) => setClients(res.data))
-      .catch((err) => toast.error(err.message, { duration: 12000 }));
-    getUsers()
-      .then((res) => setUsers(res.data))
       .catch((err) => toast.error(err.message, { duration: 12000 }));
   }, []);
 
@@ -81,7 +76,6 @@ export function NewQuoteForm() {
     defaultValues: {
       title: "",
       client: "",
-      user: "",
     },
   });
 
@@ -89,7 +83,7 @@ export function NewQuoteForm() {
     const quote = {
       title: data.title,
       client: data.client,
-      user: data.user,
+      user: Cookies.get("id"),
     };
 
     postQuote(quote)
@@ -159,7 +153,7 @@ export function NewQuoteForm() {
                       {clients.map((client) => (
                         <CommandItem
                           key={client.client_id}
-                          value={client.client_id.toString()}
+                          value={client.name}
                           onSelect={() => {
                             form.setValue(
                               "client",
@@ -179,59 +173,6 @@ export function NewQuoteForm() {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="user"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Utilizador</FormLabel>
-              <Popover
-                open={openUser}
-                onOpenChange={setOpenUser}
-              >
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    className="font-normal justify-between"
-                  >
-                    {field.value
-                      ? users.find(
-                          (user) => user.user_id.toString() === field.value
-                        )?.name
-                      : "Selecione o utilizador..."}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="p-0 w-full"
-                  align="start"
-                >
-                  <Command>
-                    <CommandInput placeholder="Pesquisar utilizador..." />
-                    <CommandList>
-                      <CommandEmpty>Nenhum utilizador encontrado.</CommandEmpty>
-                      {users.map((user) => (
-                        <CommandItem
-                          key={user.user_id}
-                          value={user.user_id.toString()}
-                          onSelect={() => {
-                            form.setValue("user", user.user_id.toString());
-                            setOpenUser(false);
-                          }}
-                        >
-                          {user.name}
-                        </CommandItem>
-                      ))}
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <Button type="submit">Adicionar orçamento</Button>
       </form>
     </Form>
