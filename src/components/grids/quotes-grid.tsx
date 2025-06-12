@@ -91,11 +91,11 @@ export default function QuotesGrid() {
                     <Skeleton className="h-6 w-3/4" />
                   </CardTitle>
                   <CardDescription>
-                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/4" />
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-40 w-full" />
+                  <Skeleton className="h-20 w-full" />
                 </CardContent>
                 <CardFooter>
                   <Skeleton className="h-10 w-full" />
@@ -118,12 +118,19 @@ export default function QuotesGrid() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-col gap-1 text-sm">
-                  <div className="flex gap-1 text-muted-foreground">
-                    <Calendar className="w-[1em] h-[fit-content] mt-[0.2em] shrink-0" />
-                    {new Date(quote.creation_date).toLocaleDateString("pt-PT")}
+                <div className="flex flex-col gap-1">
+                  <div className="flex gap-1 text-muted-foreground text-xs">
+                    <Calendar className="w-[1em] h-[fit-content] mt-[0.1em] shrink-0" />
+                    {new Date(quote.creation_date).toLocaleString("pt-PT", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })}
                   </div>
-                  <p>
+                  <p className="text-sm">
                     <strong>Total:</strong> {quote.total}€
                   </p>
                 </div>
