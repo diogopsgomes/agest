@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { postQuote } from "@/lib/api/quotes";
 import { Input } from "@/components/ui/input";
 import { getClients } from "@/lib/api/clients";
+import { getTags } from "@/lib/api/tags";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -35,15 +36,37 @@ import {
   CommandList,
 } from "@/components/ui/command";
 
+import MultipleSelector, { Option } from "@/components/ui/multiple-selector";
+
 interface Client {
   client_id: number;
   name: string;
 }
 
-interface User {
-  user_id: number;
+interface Tag {
+  tag_id: number;
   name: string;
 }
+
+interface Service {
+  service_id: number;
+  name: string;
+  hours_default: number;
+  service_rate: number;
+}
+
+const LineSchema = z.object({
+  serviceId: z
+    .string()
+    .nonempty("Selecione um serviço.")
+    .refine((value) => parseInt(value) > 0, "Serviço inválido."),
+  hours: z.number().min(0, "Número de horas deve ser maior ou igual a zero."),
+  discount: z
+    .number()
+    .min(0, "Desconto deve ser maior ou igual a zero.")
+    .max(100, "Desconto não pode ser maior que 100."),
+  subtotal: z.number(),
+});
 
 const FormSchema = z.object({
   title: z
@@ -54,9 +77,8 @@ const FormSchema = z.object({
       required_error: "O cliente do orçamento é obrigatório",
     })
     .nonempty({ message: "O cliente do orçamento é obrigatório" }),
-  user: z
-    .string({ required_error: "O utilizador do orçamento é obrigatório" })
-    .optional(),
+  tags: z.array(z.string()).optional(),
+  lines: z.array(LineSchema),
 });
 
 export function NewQuoteForm() {
@@ -65,9 +87,14 @@ export function NewQuoteForm() {
   const [clients, setClients] = useState<Client[]>([]);
   const [openClient, setOpenClient] = useState(false);
 
+  const [tags, setTags] = useState<Tag[]>([]);
+
   useEffect(() => {
     getClients()
       .then((res) => setClients(res.data))
+      .catch((err) => toast.error(err.message, { duration: 12000 }));
+    getTags()
+      .then((res) => setTags(res.data))
       .catch((err) => toast.error(err.message, { duration: 12000 }));
   }, []);
 
@@ -76,6 +103,7 @@ export function NewQuoteForm() {
     defaultValues: {
       title: "",
       client: "",
+      tags: [],
     },
   });
 
@@ -83,6 +111,7 @@ export function NewQuoteForm() {
     const quote = {
       title: data.title,
       client: data.client,
+      tags: (data.tags ?? []).map((tag) => parseInt(tag)),
       user: Cookies.get("id"),
     };
 
@@ -169,6 +198,33 @@ export function NewQuoteForm() {
                   </Command>
                 </PopoverContent>
               </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="tags"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tags</FormLabel>
+              <FormControl>
+                {tags.length > 0 && (
+                  <MultipleSelector
+                    defaultOptions={tags.map((tag) => ({
+                      label: tag.name,
+                      value: tag.tag_id.toString(),
+                    }))}
+                    placeholder="Selecione as tags..."
+                    emptyIndicator={
+                      <p className="text-center text-sm text-muted-foreground">
+                        Não foram encontradas tags.
+                      </p>
+                    }
+                    className="text-sm"
+                  />
+                )}
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
