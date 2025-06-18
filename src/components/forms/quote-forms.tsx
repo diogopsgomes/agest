@@ -8,13 +8,15 @@ import Cookies from "js-cookie";
 import { useFieldArray, useForm } from "react-hook-form";
 import { ChevronsUpDown, Minus, Plus } from "lucide-react";
 
+import { getTags } from "@/lib/api/tags";
 import { useRouter } from "next/navigation";
 import { postQuote } from "@/lib/api/quotes";
 import { Input } from "@/components/ui/input";
 import { getClients } from "@/lib/api/clients";
-import { getTags } from "@/lib/api/tags";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { getServices } from "@/lib/api/services";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, buttonVariants } from "@/components/ui/button";
+import MultipleSelector from "@/components/ui/multiple-selector";
 import {
   Popover,
   PopoverContent,
@@ -35,9 +37,6 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-
-import MultipleSelector, { Option } from "@/components/ui/multiple-selector";
-import { getServices } from "@/lib/api/services";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -82,8 +81,8 @@ const LineSchema = z.object({
   line_subtotal: z.number(),
   line_discount: z
     .number()
-    .min(0, "Desconto deve ser maior ou igual a zero")
-    .max(100, "Desconto não pode ser maior que 100"),
+    .min(0, "Desconto deve estar compreendido entre 0 e 100")
+    .max(100, "Desconto deve estar compreendido entre 0 e 100"),
   line_total: z.number(),
 });
 
@@ -109,9 +108,9 @@ export function NewQuoteForm() {
   const [tags, setTags] = useState<Tag[]>([]);
 
   const [services, setServices] = useState<Service[]>([]);
-  const [openService, setOpenService] = useState(false);
+  const [openServices, setOpenServices] = useState<Record<number, boolean>>({});
 
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState<number | null>(null);
 
   useEffect(() => {
     getClients()
@@ -138,6 +137,7 @@ export function NewQuoteForm() {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "lines",
+    shouldUnregister: true,
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -155,23 +155,6 @@ export function NewQuoteForm() {
       })
       .catch((err) => toast.error(err.message));
   }
-
-  /* const lines = form.watch("lines");
-
-  useEffect(() => {
-    (lines ?? []).forEach((line, index) => {
-      const selectedService = services.find(
-        (service) => service.service_id.toString() === line.line_service
-      );
-
-      const rate = selectedService ? selectedService.service_rate.price : 0;
-      const subtotal = line.line_hours * rate;
-      const total = subtotal * (1 - (line.line_discount ?? 0) / 100);
-
-      form.setValue(`lines.${index}.line_subtotal`, subtotal);
-      form.setValue(`lines.${index}.line_total`, total);
-    });
-  }, [lines, services, form]); */
 
   return (
     <Form {...form}>
@@ -295,8 +278,13 @@ export function NewQuoteForm() {
                   <FormItem className="flex-1 basis-3/12">
                     <FormLabel>Serviço</FormLabel>
                     <Popover
-                      open={openService}
-                      onOpenChange={setOpenService}
+                      open={!!openServices[index]}
+                      onOpenChange={(isOpen) => {
+                        setOpenServices((prev) => ({
+                          ...prev,
+                          [index]: isOpen,
+                        }));
+                      }}
                     >
                       <PopoverTrigger asChild>
                         <Button
@@ -336,22 +324,32 @@ export function NewQuoteForm() {
                                     `lines.${index}.line_hours`,
                                     service.hours_default
                                   );
+
+                                  const rate = service.service_rate.price || 0;
+                                  const hours =
+                                    form.getValues(
+                                      `lines.${index}.line_hours`
+                                    ) || 0;
+                                  const discount =
+                                    form.getValues(
+                                      `lines.${index}.line_discount`
+                                    ) || 0;
+                                  const subtotal = hours * rate;
+                                  const total = subtotal * (1 - discount / 100);
+
                                   form.setValue(
                                     `lines.${index}.line_subtotal`,
-                                    service.hours_default *
-                                      service.service_rate.price
+                                    subtotal
                                   );
                                   form.setValue(
                                     `lines.${index}.line_total`,
-                                    service.hours_default *
-                                      service.service_rate.price *
-                                      (1 -
-                                        form.getValues(
-                                          `lines.${index}.line_discount`
-                                        ) /
-                                          100)
+                                    total
                                   );
-                                  setOpenService(false);
+
+                                  setOpenServices((prev) => ({
+                                    ...prev,
+                                    [index]: false,
+                                  }));
                                 }}
                               >
                                 {service.name}
@@ -394,10 +392,17 @@ export function NewQuoteForm() {
                         type="number"
                         className="text-sm"
                         placeholder="Insira o número de horas"
-                        onChangeCapture={(e) => {
-                          const hours = parseInt(
-                            (e.target as HTMLInputElement).value
-                          );
+                        min={0}
+                        {...field}
+                        onChange={(e) => {
+                          let hours = isNaN(e.target.valueAsNumber)
+                            ? 0
+                            : e.target.valueAsNumber;
+
+                          if (hours < 0) hours = 0;
+
+                          field.onChange(hours);
+
                           const service = services.find(
                             (service) =>
                               service.service_id.toString() ===
@@ -416,7 +421,6 @@ export function NewQuoteForm() {
                           );
                           form.setValue(`lines.${index}.line_total`, total);
                         }}
-                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -453,10 +457,19 @@ export function NewQuoteForm() {
                         type="number"
                         className="text-sm"
                         placeholder="Insira a percentagem de desconto"
-                        onChangeCapture={(e) => {
-                          const discount = parseInt(
-                            (e.target as HTMLInputElement).value
-                          );
+                        min={0}
+                        max={100}
+                        {...field}
+                        onChange={(e) => {
+                          let discount = isNaN(e.target.valueAsNumber)
+                            ? 0
+                            : e.target.valueAsNumber;
+
+                          if (discount < 0) discount = 0;
+                          if (discount > 100) discount = 100;
+
+                          field.onChange(discount);
+
                           const service = services.find(
                             (service) =>
                               service.service_id.toString() ===
@@ -475,7 +488,6 @@ export function NewQuoteForm() {
                           );
                           form.setValue(`lines.${index}.line_total`, total);
                         }}
-                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -503,11 +515,13 @@ export function NewQuoteForm() {
               />
               <Button
                 variant="destructive"
-                onClick={() => setShowDeleteDialog(true)}
+                onClick={() => {
+                  setShowDeleteDialog(index);
+                }}
               >
                 <Minus />
               </Button>
-              <AlertDialog open={showDeleteDialog}>
+              <AlertDialog open={showDeleteDialog === index}>
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>
@@ -519,14 +533,14 @@ export function NewQuoteForm() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel
-                      onClick={() => setShowDeleteDialog(false)}
+                      onClick={() => setShowDeleteDialog(null)}
                     >
                       Cancelar
                     </AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
                         remove(index);
-                        setShowDeleteDialog(false);
+                        setShowDeleteDialog(null);
                       }}
                       className={buttonVariants({ variant: "destructive" })}
                     >
