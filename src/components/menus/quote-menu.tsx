@@ -3,11 +3,11 @@
 import { useState } from "react";
 
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { Download, Mail, Trash2 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
-import { deleteQuote } from "@/lib/api/quotes";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { deleteQuote, generateQuotePDF } from "@/lib/api/quotes";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +27,50 @@ export default function QuoteMenu({ quoteId }: { quoteId: string }) {
   return (
     <div className="flex justify-between items-center gap-2 mb-8">
       <div className="flex items-center gap-2">
+        <Button
+          variant="default"
+          onClick={() => {
+            generateQuotePDF(quoteId)
+              .then((res) => {
+                const blob = new Blob(
+                  [
+                    Uint8Array.from(atob(res.data.buffer), (c) =>
+                      c.charCodeAt(0)
+                    ),
+                  ],
+                  { type: "application/pdf" }
+                );
+                const url = URL.createObjectURL(blob);
+                window.open(url, "_blank");
+              })
+              .catch((err) => toast.error(err.message));
+          }}
+        >
+          <Download />
+          Download ficheiro
+        </Button>
+        <Button
+          variant="default"
+          onClick={() => {
+            generateQuotePDF(quoteId)
+              .then((res) => {
+                const blob = new Blob(
+                  [
+                    Uint8Array.from(atob(res.data.buffer), (c) =>
+                      c.charCodeAt(0)
+                    ),
+                  ],
+                  { type: "application/pdf" }
+                );
+                const url = URL.createObjectURL(blob);
+                window.open(url, "_blank");
+              })
+              .catch((err) => toast.error(err.message));
+          }}
+        >
+          <Mail />
+          Enviar ficheiro
+        </Button>
         <Button
           variant="destructive"
           onClick={() => setShowDeleteDialog(true)}
