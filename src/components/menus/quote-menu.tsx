@@ -1,13 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { toast } from "sonner";
-import { Download, Mail, Trash2 } from "lucide-react";
+import { Download, Loader2, Mail, Trash2 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { deleteQuote, generateQuotePDF } from "@/lib/api/quotes";
+import {
+  deleteQuote,
+  generateQuoteDocument,
+  getQuote,
+  sendQuoteDocument,
+} from "@/lib/api/quotes";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +38,21 @@ import {
 export default function QuoteMenu({ quoteId }: { quoteId: string }) {
   const router = useRouter();
 
+  const [email, setEmail] = useState("");
+  const [loadingDownload, setLoadingDownload] = useState(false);
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  useEffect(() => {
+    getQuote(quoteId)
+      .then((res) => {
+        setEmail(res.data.client.email || "");
+      })
+      .catch((err) => {
+        toast.error("Erro ao carregar o email do cliente");
+        console.error(err);
+      });
+  }, [quoteId]);
 
   return (
     <div className="flex justify-between items-center gap-2 mb-8">
@@ -30,47 +60,89 @@ export default function QuoteMenu({ quoteId }: { quoteId: string }) {
         <Button
           variant="default"
           onClick={() => {
-            generateQuotePDF(quoteId)
+            setLoadingDownload(true);
+            generateQuoteDocument(quoteId)
               .then((res) => {
                 const blob = new Blob(
                   [
-                    Uint8Array.from(atob(res.data.buffer), (c) =>
+                    Uint8Array.from(atob(res.data.base64), (c) =>
                       c.charCodeAt(0)
                     ),
                   ],
                   { type: "application/pdf" }
                 );
+
                 const url = URL.createObjectURL(blob);
-                window.open(url, "_blank");
+
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = res.data.name;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                URL.revokeObjectURL(url);
               })
-              .catch((err) => toast.error(err.message));
+              .catch((err) => toast.error(err.message))
+              .finally(() => setLoadingDownload(false));
           }}
+          disabled={loadingDownload}
         >
-          <Download />
+          {loadingDownload ? (
+            <Loader2 className="animate-spin" />
+          ) : (
+            <Download />
+          )}
           Download ficheiro
         </Button>
         <Button
           variant="default"
-          onClick={() => {
-            generateQuotePDF(quoteId)
-              .then((res) => {
-                const blob = new Blob(
-                  [
-                    Uint8Array.from(atob(res.data.buffer), (c) =>
-                      c.charCodeAt(0)
-                    ),
-                  ],
-                  { type: "application/pdf" }
-                );
-                const url = URL.createObjectURL(blob);
-                window.open(url, "_blank");
-              })
-              .catch((err) => toast.error(err.message));
-          }}
+          onClick={() => setShowEmailDialog(true)}
         >
           <Mail />
           Enviar ficheiro
         </Button>
+        <Dialog
+          open={showEmailDialog}
+          onOpenChange={setShowEmailDialog}
+        >
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Enviar ficheiro</DialogTitle>
+              <DialogDescription>
+                Insira o email para o qual pretende enviar o ficheiro.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4">
+              <div className="grid gap-3">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  defaultValue={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Cancelar</Button>
+              </DialogClose>
+              <Button
+                type="submit"
+                onClick={() =>
+                  sendQuoteDocument(quoteId, email)
+                    .then((res) => {
+                      toast.success("Orçamento enviado");
+                    })
+                    .catch((err) => toast.error(err.message))
+                }
+              >
+                Enviar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         <Button
           variant="destructive"
           onClick={() => setShowDeleteDialog(true)}
@@ -78,7 +150,10 @@ export default function QuoteMenu({ quoteId }: { quoteId: string }) {
           <Trash2 />
           <span>Eliminar orçamento</span>
         </Button>
-        <AlertDialog open={showDeleteDialog}>
+        <AlertDialog
+          open={showDeleteDialog}
+          onOpenChange={setShowDeleteDialog}
+        >
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
@@ -90,9 +165,7 @@ export default function QuoteMenu({ quoteId }: { quoteId: string }) {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>
-                Cancelar
-              </AlertDialogCancel>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() =>
                   deleteQuote(quoteId)
@@ -101,7 +174,6 @@ export default function QuoteMenu({ quoteId }: { quoteId: string }) {
                       router.push("/quotes");
                     })
                     .catch((err) => toast.error(err.message))
-                    .finally(() => setShowDeleteDialog(false))
                 }
                 className={buttonVariants({ variant: "destructive" })}
               >

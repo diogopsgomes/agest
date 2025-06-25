@@ -4,29 +4,29 @@ import React, { useEffect, useState } from "react";
 
 import { toast } from "sonner";
 
-import { generateQuotePDF } from "@/lib/api/quotes";
+import { generateQuoteDocument } from "@/lib/api/quotes";
+import { object } from "zod";
 
 export default function QuoteFrame({ quoteId }: { quoteId: string }) {
   const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    generateQuotePDF(quoteId)
+    let objectUrl: string | null = null;
+
+    generateQuoteDocument(quoteId)
       .then((res) => {
         const blob = new Blob(
-          [Uint8Array.from(atob(res.data.buffer), (c) => c.charCodeAt(0))],
+          [Uint8Array.from(atob(res.data.base64), (c) => c.charCodeAt(0))],
           { type: "application/pdf" }
         );
-        const objectUrl = URL.createObjectURL(blob);
+        objectUrl = URL.createObjectURL(blob);
         setUrl(objectUrl);
-        return () => {
-          URL.revokeObjectURL(objectUrl);
-        };
       })
       .catch((err) => toast.error(err.message));
 
     return () => {
-      if (url) {
-        URL.revokeObjectURL(url);
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
       }
     };
   }, [quoteId]);

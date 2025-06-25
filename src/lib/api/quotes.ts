@@ -87,7 +87,7 @@ export async function deleteQuote(id: any) {
   }
 }
 
-export async function generateQuotePDF(id: any) {
+export async function generateQuoteDocument(id: any) {
   try {
     const res = await fetch(`${base_url}/quotes/${id}/pdf/generate`, {
       method: "GET",
@@ -96,6 +96,26 @@ export async function generateQuotePDF(id: any) {
       },
     });
 
+    if (!res.ok) throw new Error(res.statusText);
+
+    return await res.json();
+  } catch (err: any) {
+    throw new Error(err.message);
+  }
+}
+
+export async function sendQuoteDocument(id: any, email: string) {
+  try {
+    const res = await fetch(`${base_url}/quotes/${id}/pdf/send`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    console.log(email, id);
+    console.log(await res.text());
     if (!res.ok) throw new Error(res.statusText);
 
     return await res.json();
