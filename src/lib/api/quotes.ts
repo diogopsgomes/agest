@@ -114,8 +114,6 @@ export async function sendQuoteDocument(id: any, email: string) {
       body: JSON.stringify({ email }),
     });
 
-    console.log(email, id);
-    console.log(await res.text());
     if (!res.ok) throw new Error(res.statusText);
 
     return await res.json();

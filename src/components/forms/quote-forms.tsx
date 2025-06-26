@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { getClients } from "@/lib/api/clients";
 import { getServices } from "@/lib/api/services";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Separator } from "@/components/ui/separator";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { getQuote, postQuote, putQuote } from "@/lib/api/quotes";
 import MultipleSelector from "@/components/ui/multiple-selector";
@@ -97,6 +98,12 @@ const FormSchema = z.object({
     .nonempty({ message: "O cliente do orçamento é obrigatório" }),
   tags: z.array(z.string()).optional(),
   lines: z.array(LineSchema),
+  subtotal: z.number(),
+  discount: z
+    .number()
+    .min(0, "Desconto deve estar compreendido entre 0 e 100")
+    .max(100, "Desconto deve estar compreendido entre 0 e 100"),
+  total: z.number(),
 });
 
 export function NewQuoteForm() {
@@ -111,6 +118,9 @@ export function NewQuoteForm() {
   const [openServices, setOpenServices] = useState<Record<number, boolean>>({});
 
   const [showDeleteDialog, setShowDeleteDialog] = useState<number | null>(null);
+
+  const [subtotal, setSubtotal] = useState(0);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     getClients()
@@ -130,9 +140,34 @@ export function NewQuoteForm() {
       title: "",
       client: "",
       tags: [],
-      lines: [],
+      lines: [
+        {
+          line_service: "",
+          line_title: "",
+          line_hours: 0,
+          line_subtotal: 0,
+          line_discount: 0,
+          line_total: 0,
+        },
+      ],
+      subtotal: 0,
+      discount: 0,
+      total: 0,
     },
   });
+
+  useEffect(() => {
+    const subscription = form.watch((fields) => {
+      const subtotal =
+        fields.lines?.reduce((acc, line) => acc + (line?.line_total || 0), 0) ??
+        0;
+
+      setSubtotal(subtotal);
+      setTotal(subtotal * (1 - (fields.discount ?? 0) / 100));
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -155,8 +190,6 @@ export function NewQuoteForm() {
         total: line.line_total,
       })),
     };
-
-    console.log(quote);
 
     postQuote(quote)
       .then(() => {
@@ -592,6 +625,86 @@ export function NewQuoteForm() {
           >
             <Plus />
           </Button>
+          <Separator />
+          <FormField
+            control={form.control}
+            name={"subtotal"}
+            render={({ field }) => (
+              <FormItem className="flex justify-self-end">
+                <FormLabel className="min-w-[65px]">Subtotal</FormLabel>
+                <FormControl>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      className="text-sm w-[100px]"
+                      placeholder="Subtotal"
+                      disabled
+                      {...field}
+                      value={subtotal}
+                    />
+                    <span className="text-sm text-muted-foreground">€</span>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name={"discount"}
+            render={({ field }) => (
+              <FormItem className="flex justify-self-end">
+                <FormLabel className="min-w-[65px]">Desconto</FormLabel>
+                <FormControl>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      className="text-sm w-[100px]"
+                      placeholder="Insira a percentagem de desconto"
+                      min={0}
+                      max={100}
+                      {...field}
+                      onChange={(e) => {
+                        let discount = isNaN(e.target.valueAsNumber)
+                          ? 0
+                          : e.target.valueAsNumber;
+
+                        if (discount < 0) discount = 0;
+                        if (discount > 100) discount = 100;
+
+                        field.onChange(discount);
+                      }}
+                    />
+                    <span className="text-sm text-muted-foreground">%</span>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name={"total"}
+            render={({ field }) => (
+              <FormItem className="flex justify-self-end">
+                <FormLabel className="min-w-[65px]">Total</FormLabel>
+                <FormControl>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      className="text-sm w-[100px]"
+                      placeholder="Total"
+                      disabled
+                      {...field}
+                      value={total}
+                    />
+                    <span className="text-sm text-muted-foreground">€</span>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
         <Button type="submit">Adicionar orçamento</Button>
       </form>
@@ -611,6 +724,9 @@ export function EditQuoteForm({ quoteId }: { quoteId: string }) {
   const [openServices, setOpenServices] = useState<Record<number, boolean>>({});
 
   const [showDeleteDialog, setShowDeleteDialog] = useState<number | null>(null);
+
+  const [subtotal, setSubtotal] = useState(0);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     getClients()
@@ -651,9 +767,34 @@ export function EditQuoteForm({ quoteId }: { quoteId: string }) {
       title: "",
       client: "",
       tags: [],
-      lines: [],
+      lines: [
+        {
+          line_service: "",
+          line_title: "",
+          line_hours: 0,
+          line_subtotal: 0,
+          line_discount: 0,
+          line_total: 0,
+        },
+      ],
+      subtotal: 0,
+      discount: 0,
+      total: 0,
     },
   });
+
+  useEffect(() => {
+    const subscription = form.watch((fields) => {
+      const subtotal =
+        fields.lines?.reduce((acc, line) => acc + (line?.line_total || 0), 0) ??
+        0;
+
+      setSubtotal(subtotal);
+      setTotal(subtotal * (1 - (fields.discount ?? 0) / 100));
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -1093,6 +1234,86 @@ export function EditQuoteForm({ quoteId }: { quoteId: string }) {
           >
             <Plus />
           </Button>
+          <Separator />
+          <FormField
+            control={form.control}
+            name={"subtotal"}
+            render={({ field }) => (
+              <FormItem className="flex justify-self-end">
+                <FormLabel className="min-w-[65px]">Subtotal</FormLabel>
+                <FormControl>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      className="text-sm w-[100px]"
+                      placeholder="Subtotal"
+                      disabled
+                      {...field}
+                      value={subtotal}
+                    />
+                    <span className="text-sm text-muted-foreground">€</span>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name={"discount"}
+            render={({ field }) => (
+              <FormItem className="flex justify-self-end">
+                <FormLabel className="min-w-[65px]">Desconto</FormLabel>
+                <FormControl>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      className="text-sm w-[100px]"
+                      placeholder="Insira a percentagem de desconto"
+                      min={0}
+                      max={100}
+                      {...field}
+                      onChange={(e) => {
+                        let discount = isNaN(e.target.valueAsNumber)
+                          ? 0
+                          : e.target.valueAsNumber;
+
+                        if (discount < 0) discount = 0;
+                        if (discount > 100) discount = 100;
+
+                        field.onChange(discount);
+                      }}
+                    />
+                    <span className="text-sm text-muted-foreground">%</span>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name={"total"}
+            render={({ field }) => (
+              <FormItem className="flex justify-self-end">
+                <FormLabel className="min-w-[65px]">Total</FormLabel>
+                <FormControl>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      className="text-sm w-[100px]"
+                      placeholder="Total"
+                      disabled
+                      {...field}
+                      value={total}
+                    />
+                    <span className="text-sm text-muted-foreground">€</span>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
         <Button type="submit">Atualizar orçamento</Button>
       </form>

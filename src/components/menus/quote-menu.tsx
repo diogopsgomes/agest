@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { toast } from "sonner";
-import { Download, Loader2, Mail, Trash2 } from "lucide-react";
+import { Download, Loader2, Mail, Send, Trash2 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -40,18 +40,14 @@ export default function QuoteMenu({ quoteId }: { quoteId: string }) {
 
   const [email, setEmail] = useState("");
   const [loadingDownload, setLoadingDownload] = useState(false);
+  const [loadingEmail, setLoadingEmail] = useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   useEffect(() => {
     getQuote(quoteId)
-      .then((res) => {
-        setEmail(res.data.client.email || "");
-      })
-      .catch((err) => {
-        toast.error("Erro ao carregar o email do cliente");
-        console.error(err);
-      });
+      .then((res) => setEmail(res.data.client.email || ""))
+      .catch((err) => toast.error(err.message, { duration: 12000 }));
   }, [quoteId]);
 
   return (
@@ -97,7 +93,14 @@ export default function QuoteMenu({ quoteId }: { quoteId: string }) {
         </Button>
         <Button
           variant="default"
-          onClick={() => setShowEmailDialog(true)}
+          onClick={() => {
+            getQuote(quoteId)
+              .then((res) => {
+                setEmail(res.data.client.email || "");
+                setShowEmailDialog(true);
+              })
+              .catch((err) => toast.error(err.message));
+          }}
         >
           <Mail />
           Enviar ficheiro
@@ -119,7 +122,7 @@ export default function QuoteMenu({ quoteId }: { quoteId: string }) {
                 <Input
                   id="email"
                   name="email"
-                  defaultValue={email}
+                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
@@ -130,14 +133,19 @@ export default function QuoteMenu({ quoteId }: { quoteId: string }) {
               </DialogClose>
               <Button
                 type="submit"
-                onClick={() =>
+                onClick={() => {
+                  setLoadingEmail(true);
                   sendQuoteDocument(quoteId, email)
                     .then((res) => {
                       toast.success("Orçamento enviado");
+                      setShowEmailDialog(false);
                     })
                     .catch((err) => toast.error(err.message))
-                }
+                    .finally(() => setLoadingEmail(false));
+                }}
+                disabled={loadingEmail}
               >
+                {loadingEmail ? <Loader2 className="animate-spin" /> : <Send />}
                 Enviar
               </Button>
             </DialogFooter>
