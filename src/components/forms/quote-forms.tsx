@@ -52,6 +52,9 @@ import {
 interface Client {
   client_id: number;
   name: string;
+  client_type: {
+    price_adjust: number;
+  };
 }
 
 interface Tag {
@@ -189,6 +192,9 @@ export function NewQuoteForm() {
         discount: line.line_discount / 100,
         total: line.line_total,
       })),
+      subtotal: data.subtotal,
+      discount: data.discount / 100,
+      total: data.total,
     };
 
     postQuote(quote)
@@ -383,6 +389,14 @@ export function NewQuoteForm() {
                                     service.hours_default
                                   );
 
+                                  const client = clients.find(
+                                    (client) =>
+                                      client.client_id.toString() ===
+                                      form.getValues("client")
+                                  );
+
+                                  const priceAdjust =
+                                    client?.client_type.price_adjust || 1;
                                   const rate = service.service_rate.price || 0;
                                   const hours =
                                     form.getValues(
@@ -392,7 +406,7 @@ export function NewQuoteForm() {
                                     form.getValues(
                                       `lines.${index}.line_discount`
                                     ) || 0;
-                                  const subtotal = hours * rate;
+                                  const subtotal = hours * rate * priceAdjust;
                                   const total = subtotal * (1 - discount / 100);
 
                                   form.setValue(
@@ -467,10 +481,18 @@ export function NewQuoteForm() {
                               form.getValues(`lines.${index}.line_service`)
                           );
 
+                          const client = clients.find(
+                            (client) =>
+                              client.client_id.toString() ===
+                              form.getValues("client")
+                          );
+
+                          const priceAdjust =
+                            client?.client_type.price_adjust || 1;
                           const rate = service ? service.service_rate.price : 0;
                           const discount =
                             form.getValues(`lines.${index}.line_discount`) || 0;
-                          const subtotal = hours * rate;
+                          const subtotal = hours * rate * priceAdjust;
                           const total = subtotal * (1 - discount / 100);
 
                           form.setValue(
@@ -534,10 +556,18 @@ export function NewQuoteForm() {
                               form.getValues(`lines.${index}.line_service`)
                           );
 
+                          const client = clients.find(
+                            (client) =>
+                              client.client_id.toString() ===
+                              form.getValues("client")
+                          );
+
+                          const priceAdjust =
+                            client?.client_type.price_adjust || 1;
                           const rate = service ? service.service_rate.price : 0;
                           const hours =
                             form.getValues(`lines.${index}.line_hours`) || 0;
-                          const subtotal = hours * rate;
+                          const subtotal = hours * rate * priceAdjust;
                           const total = subtotal * (1 - discount / 100);
 
                           form.setValue(
@@ -756,6 +786,9 @@ export function EditQuoteForm({ quoteId }: { quoteId: string }) {
                 line_total: line.total,
               }))
             : [],
+          subtotal: res.data.subtotal ? res.data.subtotal : 0,
+          discount: res.data.discount ? res.data.discount * 100 : 0,
+          total: res.data.total ? res.data.total : 0,
         });
       })
       .catch((err) => toast.error(err.message, { duration: 12000 }));
@@ -804,7 +837,10 @@ export function EditQuoteForm({ quoteId }: { quoteId: string }) {
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     putQuote(quoteId, data)
-      .then(() => toast.success("Orçamento atualizado!"))
+      .then(() => {
+        toast.success("Orçamento atualizado!");
+        router.refresh();
+      })
       .catch((err) => toast.error(err.message));
   }
 
@@ -992,6 +1028,14 @@ export function EditQuoteForm({ quoteId }: { quoteId: string }) {
                                     service.hours_default
                                   );
 
+                                  const client = clients.find(
+                                    (client) =>
+                                      client.client_id.toString() ===
+                                      form.getValues("client")
+                                  );
+
+                                  const priceAdjust =
+                                    client?.client_type.price_adjust || 1;
                                   const rate = service.service_rate.price || 0;
                                   const hours =
                                     form.getValues(
@@ -1001,7 +1045,7 @@ export function EditQuoteForm({ quoteId }: { quoteId: string }) {
                                     form.getValues(
                                       `lines.${index}.line_discount`
                                     ) || 0;
-                                  const subtotal = hours * rate;
+                                  const subtotal = hours * rate * priceAdjust;
                                   const total = subtotal * (1 - discount / 100);
 
                                   form.setValue(
@@ -1076,10 +1120,18 @@ export function EditQuoteForm({ quoteId }: { quoteId: string }) {
                               form.getValues(`lines.${index}.line_service`)
                           );
 
+                          const client = clients.find(
+                            (client) =>
+                              client.client_id.toString() ===
+                              form.getValues("client")
+                          );
+
+                          const priceAdjust =
+                            client?.client_type.price_adjust || 1;
                           const rate = service ? service.service_rate.price : 0;
                           const discount =
                             form.getValues(`lines.${index}.line_discount`) || 0;
-                          const subtotal = hours * rate;
+                          const subtotal = hours * rate * priceAdjust;
                           const total = subtotal * (1 - discount / 100);
 
                           form.setValue(
@@ -1143,10 +1195,18 @@ export function EditQuoteForm({ quoteId }: { quoteId: string }) {
                               form.getValues(`lines.${index}.line_service`)
                           );
 
+                          const client = clients.find(
+                            (client) =>
+                              client.client_id.toString() ===
+                              form.getValues("client")
+                          );
+
+                          const priceAdjust =
+                            client?.client_type.price_adjust || 1;
                           const rate = service ? service.service_rate.price : 0;
                           const hours =
                             form.getValues(`lines.${index}.line_hours`) || 0;
-                          const subtotal = hours * rate;
+                          const subtotal = hours * rate * priceAdjust;
                           const total = subtotal * (1 - discount / 100);
 
                           form.setValue(

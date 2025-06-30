@@ -36,6 +36,8 @@ export async function getQuote(id: any) {
 
 export async function postQuote(quote: any) {
   try {
+    console.log(quote);
+
     const res = await fetch(`${base_url}/quotes/add`, {
       method: "POST",
       headers: {

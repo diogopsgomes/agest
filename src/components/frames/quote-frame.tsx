@@ -5,7 +5,6 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { generateQuoteDocument } from "@/lib/api/quotes";
-import { object } from "zod";
 
 export default function QuoteFrame({ quoteId }: { quoteId: string }) {
   const [url, setUrl] = useState<string | null>(null);
