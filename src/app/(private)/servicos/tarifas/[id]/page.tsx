@@ -4,17 +4,17 @@ import { EditServiceRateForm } from "@/components/forms/service-rate-forms";
 export default async function DetalhesTarifaServico({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  params = await params;
+  const resolvedParams = await params;
 
   return (
     <>
       <h1 className="text-2xl font-semibold mb-8">
         Detalhes de tarifa de serviço
       </h1>
-      <ServiceRateMenu serviceRateId={String(params.id)} />
-      <EditServiceRateForm serviceRateId={String(params.id)} />
+      <ServiceRateMenu serviceRateId={String(resolvedParams.id)} />
+      <EditServiceRateForm serviceRateId={String(resolvedParams.id)} />
     </>
   );
 }

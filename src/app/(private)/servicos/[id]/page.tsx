@@ -5,15 +5,15 @@ import { EditServiceForm } from "@/components/forms/service-forms";
 export default async function DetalhesServico({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  params = await params;
+  const resolvedParams = await params;
 
   return (
     <>
       <PageTitle title="Detalhes de serviço" />
-      <ServiceMenu serviceId={String(params.id)} />
-      <EditServiceForm serviceId={String(params.id)} />
+      <ServiceMenu serviceId={String(resolvedParams.id)} />
+      <EditServiceForm serviceId={String(resolvedParams.id)} />
     </>
   );
 }

@@ -4,15 +4,15 @@ import { EditProjectForm } from "@/components/forms/project-forms";
 export default async function DetalhesProjeto({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  params = await params;
+  const resolvedParams = await params;
 
   return (
     <>
       <h1 className="text-2xl font-semibold mb-8">Detalhes de projeto</h1>
-      <ProjectMenu projectId={String(params.id)} />
-      <EditProjectForm projectId={String(params.id)} />
+      <ProjectMenu projectId={String(resolvedParams.id)} />
+      <EditProjectForm projectId={String(resolvedParams.id)} />
     </>
   );
 }

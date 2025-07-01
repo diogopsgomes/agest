@@ -4,15 +4,15 @@ import { EditCategoryForm } from "@/components/forms/category-forms";
 export default async function DetalhesCategoria({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  params = await params;
+  const resolvedParams = await params;
 
   return (
     <>
       <h1 className="text-2xl font-semibold mb-8">Detalhes de categoria</h1>
-      <CategoryMenu categoryId={String(params.id)} />
-      <EditCategoryForm categoryId={String(params.id)} />
+      <CategoryMenu categoryId={String(resolvedParams.id)} />
+      <EditCategoryForm categoryId={String(resolvedParams.id)} />
     </>
   );
 }

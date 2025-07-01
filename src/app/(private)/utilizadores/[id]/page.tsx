@@ -4,15 +4,15 @@ import { EditUserForm } from "@/components/forms/user-forms";
 export default async function PerfilUtilizador({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  params = await params;
+  const resolvedParams = await params;
 
   return (
     <>
       <h1 className="text-2xl font-semibold mb-8">Perfil de utilizador</h1>
-      <UserMenu userId={String(params.id)} />
-      <EditUserForm userId={String(params.id)} />
+      <UserMenu userId={String(resolvedParams.id)} />
+      <EditUserForm userId={String(resolvedParams.id)} />
     </>
   );
 }

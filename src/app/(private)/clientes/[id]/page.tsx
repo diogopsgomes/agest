@@ -4,15 +4,15 @@ import { EditClientForm } from "@/components/forms/client-forms";
 export default async function PerfilCliente({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  params = await params;
+  const resolvedParams = await params;
 
   return (
     <>
       <h1 className="text-2xl font-semibold mb-8">Perfil de cliente</h1>
-      <ClientMenu clientId={String(params.id)} />
-      <EditClientForm clientId={String(params.id)} />
+      <ClientMenu clientId={String(resolvedParams.id)} />
+      <EditClientForm clientId={String(resolvedParams.id)} />
     </>
   );
 }
