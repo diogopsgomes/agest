@@ -19,7 +19,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Label } from "@radix-ui/react-dropdown-menu";
 
 const FormSchema = z.object({
   email: z
@@ -28,15 +27,7 @@ const FormSchema = z.object({
     .email({ message: "O email deve ser um endereço de email válido" }),
   password: z
     .string({ required_error: "A password é obrigatória" })
-    .nonempty({ message: "A password é obrigatória" })
-    .min(12, { message: "A password deve ter pelo menos 12 caracteres" })
-    .regex(/[a-z]/, {
-      message: "A password deve conter pelo menos uma letra minúscula",
-    })
-    .regex(/[A-Z]/, {
-      message: "A password deve conter pelo menos uma letra maiúscula",
-    })
-    .regex(/\d/, { message: "A password deve conter pelo menos um número" }),
+    .nonempty({ message: "A password é obrigatória" }),
   remember: z.boolean().optional(),
 });
 

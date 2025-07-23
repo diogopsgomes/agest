@@ -326,317 +326,334 @@ export function NewQuoteForm() {
             </FormItem>
           )}
         />
-        <div className="space-y-4 py-4">
+        <div className="space-y-8 py-4">
           <h2 className="text-lg font-semibold leading-tight tracking-tight mb-6">
             Linhas do Orçamento
           </h2>
           {fields.map((item, index) => (
             <div
               key={item.id}
-              className="flex items-end gap-4"
+              className="space-y-4"
             >
-              <FormField
-                control={form.control}
-                name={`lines.${index}.line_service`}
-                render={({ field }) => (
-                  <FormItem className="flex-1 basis-3/12">
-                    <FormLabel>Serviço</FormLabel>
-                    <Popover
-                      open={!!openServices[index]}
-                      onOpenChange={(isOpen) => {
-                        setOpenServices((prev) => ({
-                          ...prev,
-                          [index]: isOpen,
-                        }));
-                      }}
-                    >
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className="font-normal justify-between"
-                        >
-                          {field.value
-                            ? services.find(
-                                (service) =>
-                                  service.service_id.toString() === field.value
-                              )?.name
-                            : "Selecione o serviço..."}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="p-0 w-full"
-                        align="start"
+              <div className="flex items-end gap-4">
+                <FormField
+                  control={form.control}
+                  name={`lines.${index}.line_service`}
+                  render={({ field }) => (
+                    <FormItem className="flex-1 basis-3/12">
+                      <FormLabel>Serviço</FormLabel>
+                      <Popover
+                        open={!!openServices[index]}
+                        onOpenChange={(isOpen) => {
+                          setOpenServices((prev) => ({
+                            ...prev,
+                            [index]: isOpen,
+                          }));
+                        }}
                       >
-                        <Command>
-                          <CommandInput placeholder="Pesquisar serviço..." />
-                          <CommandList>
-                            <CommandEmpty>
-                              Nenhum serviço encontrado.
-                            </CommandEmpty>
-                            {services.map((service) => (
-                              <CommandItem
-                                key={service.service_id}
-                                value={service.name}
-                                onSelect={() => {
-                                  form.setValue(
-                                    `lines.${index}.line_service`,
-                                    service.service_id.toString()
-                                  );
-                                  form.setValue(
-                                    `lines.${index}.line_hours`,
-                                    service.hours_default
-                                  );
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="font-normal justify-between"
+                          >
+                            {field.value
+                              ? services.find(
+                                  (service) =>
+                                    service.service_id.toString() ===
+                                    field.value
+                                )?.name
+                              : "Selecione o serviço..."}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="p-0 w-full"
+                          align="start"
+                        >
+                          <Command>
+                            <CommandInput placeholder="Pesquisar serviço..." />
+                            <CommandList>
+                              <CommandEmpty>
+                                Nenhum serviço encontrado.
+                              </CommandEmpty>
+                              {services.map((service) => (
+                                <CommandItem
+                                  key={service.service_id}
+                                  value={service.name}
+                                  onSelect={() => {
+                                    form.setValue(
+                                      `lines.${index}.line_service`,
+                                      service.service_id.toString()
+                                    );
+                                    form.setValue(
+                                      `lines.${index}.line_hours`,
+                                      service.hours_default
+                                    );
+                                    form.setValue(
+                                      `lines.${index}.line_title`,
+                                      service.name
+                                    );
 
-                                  const client = clients.find(
-                                    (client) =>
-                                      client.client_id.toString() ===
-                                      form.getValues("client")
-                                  );
+                                    const client = clients.find(
+                                      (client) =>
+                                        client.client_id.toString() ===
+                                        form.getValues("client")
+                                    );
 
-                                  const priceAdjust =
-                                    client?.client_type.price_adjust || 1;
-                                  const rate = service.service_rate.price || 0;
-                                  const hours =
-                                    form.getValues(
-                                      `lines.${index}.line_hours`
-                                    ) || 0;
-                                  const discount =
-                                    form.getValues(
-                                      `lines.${index}.line_discount`
-                                    ) || 0;
-                                  const subtotal = hours * rate * priceAdjust;
-                                  const total = subtotal * (1 - discount / 100);
+                                    const priceAdjust =
+                                      client?.client_type.price_adjust || 1;
+                                    const rate =
+                                      service.service_rate.price || 0;
+                                    const hours =
+                                      form.getValues(
+                                        `lines.${index}.line_hours`
+                                      ) || 0;
+                                    const discount =
+                                      form.getValues(
+                                        `lines.${index}.line_discount`
+                                      ) || 0;
+                                    const subtotal = hours * rate * priceAdjust;
+                                    const total =
+                                      subtotal * (1 - discount / 100);
 
-                                  form.setValue(
-                                    `lines.${index}.line_subtotal`,
-                                    subtotal
-                                  );
-                                  form.setValue(
-                                    `lines.${index}.line_total`,
-                                    total
-                                  );
+                                    form.setValue(
+                                      `lines.${index}.line_subtotal`,
+                                      subtotal
+                                    );
+                                    form.setValue(
+                                      `lines.${index}.line_total`,
+                                      total
+                                    );
 
-                                  setOpenServices((prev) => ({
-                                    ...prev,
-                                    [index]: false,
-                                  }));
-                                }}
-                              >
-                                {service.name}
-                              </CommandItem>
-                            ))}
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`lines.${index}.line_title`}
-                render={({ field }) => (
-                  <FormItem className="flex-1 basis-5/12">
-                    <FormLabel>Descrição</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        className="text-sm"
-                        placeholder="Insira a descrição do serviço"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`lines.${index}.line_hours`}
-                render={({ field }) => (
-                  <FormItem className="flex-1 basis-1/12">
-                    <FormLabel>Horas</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        className="text-sm"
-                        placeholder="Insira o número de horas"
-                        min={0}
-                        {...field}
-                        onChange={(e) => {
-                          let hours = isNaN(e.target.valueAsNumber)
-                            ? 0
-                            : e.target.valueAsNumber;
+                                    setOpenServices((prev) => ({
+                                      ...prev,
+                                      [index]: false,
+                                    }));
+                                  }}
+                                >
+                                  {service.name}
+                                </CommandItem>
+                              ))}
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex items-end gap-4">
+                <FormField
+                  control={form.control}
+                  name={`lines.${index}.line_title`}
+                  render={({ field }) => (
+                    <FormItem className="flex-1 basis-5/12">
+                      <FormLabel>Descrição</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          className="text-sm"
+                          placeholder="Insira a descrição do serviço"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`lines.${index}.line_hours`}
+                  render={({ field }) => (
+                    <FormItem className="flex-1 basis-1/12">
+                      <FormLabel>Horas</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          className="text-sm"
+                          placeholder="Insira o número de horas"
+                          min={0}
+                          {...field}
+                          onChange={(e) => {
+                            let hours = isNaN(e.target.valueAsNumber)
+                              ? 0
+                              : e.target.valueAsNumber;
 
-                          if (hours < 0) hours = 0;
+                            if (hours < 0) hours = 0;
 
-                          field.onChange(hours);
+                            field.onChange(hours);
 
-                          const service = services.find(
-                            (service) =>
-                              service.service_id.toString() ===
-                              form.getValues(`lines.${index}.line_service`)
-                          );
+                            const service = services.find(
+                              (service) =>
+                                service.service_id.toString() ===
+                                form.getValues(`lines.${index}.line_service`)
+                            );
 
-                          const client = clients.find(
-                            (client) =>
-                              client.client_id.toString() ===
-                              form.getValues("client")
-                          );
+                            const client = clients.find(
+                              (client) =>
+                                client.client_id.toString() ===
+                                form.getValues("client")
+                            );
 
-                          const priceAdjust =
-                            client?.client_type.price_adjust || 1;
-                          const rate = service ? service.service_rate.price : 0;
-                          const discount =
-                            form.getValues(`lines.${index}.line_discount`) || 0;
-                          const subtotal = hours * rate * priceAdjust;
-                          const total = subtotal * (1 - discount / 100);
+                            const priceAdjust =
+                              client?.client_type.price_adjust || 1;
+                            const rate = service
+                              ? service.service_rate.price
+                              : 0;
+                            const discount =
+                              form.getValues(`lines.${index}.line_discount`) ||
+                              0;
+                            const subtotal = hours * rate * priceAdjust;
+                            const total = subtotal * (1 - discount / 100);
 
-                          form.setValue(
-                            `lines.${index}.line_subtotal`,
-                            subtotal
-                          );
-                          form.setValue(`lines.${index}.line_total`, total);
+                            form.setValue(
+                              `lines.${index}.line_subtotal`,
+                              subtotal
+                            );
+                            form.setValue(`lines.${index}.line_total`, total);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`lines.${index}.line_subtotal`}
+                  render={({ field }) => (
+                    <FormItem className="flex-1 basis-1/12">
+                      <FormLabel>Subtotal</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          className="text-sm"
+                          placeholder="Subtotal"
+                          disabled
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`lines.${index}.line_discount`}
+                  render={({ field }) => (
+                    <FormItem className="flex-1 basis-1/12">
+                      <FormLabel>Desconto</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          className="text-sm"
+                          placeholder="Insira a percentagem de desconto"
+                          min={0}
+                          max={100}
+                          {...field}
+                          onChange={(e) => {
+                            let discount = isNaN(e.target.valueAsNumber)
+                              ? 0
+                              : e.target.valueAsNumber;
+
+                            if (discount < 0) discount = 0;
+                            if (discount > 100) discount = 100;
+
+                            field.onChange(discount);
+
+                            const service = services.find(
+                              (service) =>
+                                service.service_id.toString() ===
+                                form.getValues(`lines.${index}.line_service`)
+                            );
+
+                            const client = clients.find(
+                              (client) =>
+                                client.client_id.toString() ===
+                                form.getValues("client")
+                            );
+
+                            const priceAdjust =
+                              client?.client_type.price_adjust || 1;
+                            const rate = service
+                              ? service.service_rate.price
+                              : 0;
+                            const hours =
+                              form.getValues(`lines.${index}.line_hours`) || 0;
+                            const subtotal = hours * rate * priceAdjust;
+                            const total = subtotal * (1 - discount / 100);
+
+                            form.setValue(
+                              `lines.${index}.line_subtotal`,
+                              subtotal
+                            );
+                            form.setValue(`lines.${index}.line_total`, total);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`lines.${index}.line_total`}
+                  render={({ field }) => (
+                    <FormItem className="flex-1 basis-1/12">
+                      <FormLabel>Total</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          className="text-sm"
+                          placeholder="Total"
+                          disabled
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    setShowDeleteDialog(index);
+                  }}
+                >
+                  <Minus />
+                </Button>
+                <AlertDialog open={showDeleteDialog === index}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        De certeza que pretende eliminar esta linha de
+                        orçamento?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Esta ação não pode ser anulada.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel
+                        onClick={() => setShowDeleteDialog(null)}
+                      >
+                        Cancelar
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          remove(index);
+                          setShowDeleteDialog(null);
                         }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`lines.${index}.line_subtotal`}
-                render={({ field }) => (
-                  <FormItem className="flex-1 basis-1/12">
-                    <FormLabel>Subtotal</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        className="text-sm"
-                        placeholder="Subtotal"
-                        disabled
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`lines.${index}.line_discount`}
-                render={({ field }) => (
-                  <FormItem className="flex-1 basis-1/12">
-                    <FormLabel>Desconto</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        className="text-sm"
-                        placeholder="Insira a percentagem de desconto"
-                        min={0}
-                        max={100}
-                        {...field}
-                        onChange={(e) => {
-                          let discount = isNaN(e.target.valueAsNumber)
-                            ? 0
-                            : e.target.valueAsNumber;
-
-                          if (discount < 0) discount = 0;
-                          if (discount > 100) discount = 100;
-
-                          field.onChange(discount);
-
-                          const service = services.find(
-                            (service) =>
-                              service.service_id.toString() ===
-                              form.getValues(`lines.${index}.line_service`)
-                          );
-
-                          const client = clients.find(
-                            (client) =>
-                              client.client_id.toString() ===
-                              form.getValues("client")
-                          );
-
-                          const priceAdjust =
-                            client?.client_type.price_adjust || 1;
-                          const rate = service ? service.service_rate.price : 0;
-                          const hours =
-                            form.getValues(`lines.${index}.line_hours`) || 0;
-                          const subtotal = hours * rate * priceAdjust;
-                          const total = subtotal * (1 - discount / 100);
-
-                          form.setValue(
-                            `lines.${index}.line_subtotal`,
-                            subtotal
-                          );
-                          form.setValue(`lines.${index}.line_total`, total);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`lines.${index}.line_total`}
-                render={({ field }) => (
-                  <FormItem className="flex-1 basis-1/12">
-                    <FormLabel>Total</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        className="text-sm"
-                        placeholder="Total"
-                        disabled
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  setShowDeleteDialog(index);
-                }}
-              >
-                <Minus />
-              </Button>
-              <AlertDialog open={showDeleteDialog === index}>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      De certeza que pretende eliminar esta linha de orçamento?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Esta ação não pode ser anulada.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel
-                      onClick={() => setShowDeleteDialog(null)}
-                    >
-                      Cancelar
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => {
-                        remove(index);
-                        setShowDeleteDialog(null);
-                      }}
-                      className={buttonVariants({ variant: "destructive" })}
-                    >
-                      Eliminar linha de orçamento
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                        className={buttonVariants({ variant: "destructive" })}
+                      >
+                        Eliminar linha de orçamento
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           ))}
           <Button
@@ -656,85 +673,87 @@ export function NewQuoteForm() {
             <Plus />
           </Button>
           <Separator />
-          <FormField
-            control={form.control}
-            name={"subtotal"}
-            render={({ field }) => (
-              <FormItem className="flex justify-self-end">
-                <FormLabel className="min-w-[65px]">Subtotal</FormLabel>
-                <FormControl>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      className="text-sm w-[100px]"
-                      placeholder="Subtotal"
-                      disabled
-                      {...field}
-                      value={subtotal}
-                    />
-                    <span className="text-sm text-muted-foreground">€</span>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name={"discount"}
-            render={({ field }) => (
-              <FormItem className="flex justify-self-end">
-                <FormLabel className="min-w-[65px]">Desconto</FormLabel>
-                <FormControl>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      className="text-sm w-[100px]"
-                      placeholder="Insira a percentagem de desconto"
-                      min={0}
-                      max={100}
-                      {...field}
-                      onChange={(e) => {
-                        let discount = isNaN(e.target.valueAsNumber)
-                          ? 0
-                          : e.target.valueAsNumber;
+          <div className="space-y-4">
+            <FormField
+              control={form.control}
+              name={"subtotal"}
+              render={({ field }) => (
+                <FormItem className="flex justify-self-end">
+                  <FormLabel className="min-w-[65px]">Subtotal</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        className="text-sm w-[100px]"
+                        placeholder="Subtotal"
+                        disabled
+                        {...field}
+                        value={subtotal}
+                      />
+                      <span className="text-sm text-muted-foreground">€</span>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name={"discount"}
+              render={({ field }) => (
+                <FormItem className="flex justify-self-end">
+                  <FormLabel className="min-w-[65px]">Desconto</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        className="text-sm w-[100px]"
+                        placeholder="Insira a percentagem de desconto"
+                        min={0}
+                        max={100}
+                        {...field}
+                        onChange={(e) => {
+                          let discount = isNaN(e.target.valueAsNumber)
+                            ? 0
+                            : e.target.valueAsNumber;
 
-                        if (discount < 0) discount = 0;
-                        if (discount > 100) discount = 100;
+                          if (discount < 0) discount = 0;
+                          if (discount > 100) discount = 100;
 
-                        field.onChange(discount);
-                      }}
-                    />
-                    <span className="text-sm text-muted-foreground">%</span>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name={"total"}
-            render={({ field }) => (
-              <FormItem className="flex justify-self-end">
-                <FormLabel className="min-w-[65px]">Total</FormLabel>
-                <FormControl>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      className="text-sm w-[100px]"
-                      placeholder="Total"
-                      disabled
-                      {...field}
-                      value={total}
-                    />
-                    <span className="text-sm text-muted-foreground">€</span>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                          field.onChange(discount);
+                        }}
+                      />
+                      <span className="text-sm text-muted-foreground">%</span>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name={"total"}
+              render={({ field }) => (
+                <FormItem className="flex justify-self-end">
+                  <FormLabel className="min-w-[65px]">Total</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        className="text-sm w-[100px]"
+                        placeholder="Total"
+                        disabled
+                        {...field}
+                        value={total}
+                      />
+                      <span className="text-sm text-muted-foreground">€</span>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
         <Button type="submit">Adicionar orçamento</Button>
       </form>
@@ -965,317 +984,334 @@ export function EditQuoteForm({ quoteId }: { quoteId: string }) {
             </FormItem>
           )}
         />
-        <div className="space-y-4 py-4">
+        <div className="space-y-8 py-4">
           <h2 className="text-lg font-semibold leading-tight tracking-tight mb-6">
             Linhas do Orçamento
           </h2>
           {fields.map((item, index) => (
             <div
               key={item.id}
-              className="flex items-end gap-4"
+              className="space-y-4"
             >
-              <FormField
-                control={form.control}
-                name={`lines.${index}.line_service`}
-                render={({ field }) => (
-                  <FormItem className="flex-1 basis-3/12">
-                    <FormLabel>Serviço</FormLabel>
-                    <Popover
-                      open={!!openServices[index]}
-                      onOpenChange={(isOpen) => {
-                        setOpenServices((prev) => ({
-                          ...prev,
-                          [index]: isOpen,
-                        }));
-                      }}
-                    >
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className="font-normal justify-between"
-                        >
-                          {field.value
-                            ? services.find(
-                                (service) =>
-                                  service.service_id.toString() === field.value
-                              )?.name
-                            : "Selecione o serviço..."}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="p-0 w-full"
-                        align="start"
+              <div className="flex items-end gap-4">
+                <FormField
+                  control={form.control}
+                  name={`lines.${index}.line_service`}
+                  render={({ field }) => (
+                    <FormItem className="flex-1 basis-3/12">
+                      <FormLabel>Serviço</FormLabel>
+                      <Popover
+                        open={!!openServices[index]}
+                        onOpenChange={(isOpen) => {
+                          setOpenServices((prev) => ({
+                            ...prev,
+                            [index]: isOpen,
+                          }));
+                        }}
                       >
-                        <Command>
-                          <CommandInput placeholder="Pesquisar serviço..." />
-                          <CommandList>
-                            <CommandEmpty>
-                              Nenhum serviço encontrado.
-                            </CommandEmpty>
-                            {services.map((service) => (
-                              <CommandItem
-                                key={service.service_id}
-                                value={service.name}
-                                onSelect={() => {
-                                  form.setValue(
-                                    `lines.${index}.line_service`,
-                                    service.service_id.toString()
-                                  );
-                                  form.setValue(
-                                    `lines.${index}.line_hours`,
-                                    service.hours_default
-                                  );
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="font-normal justify-between"
+                          >
+                            {field.value
+                              ? services.find(
+                                  (service) =>
+                                    service.service_id.toString() ===
+                                    field.value
+                                )?.name
+                              : "Selecione o serviço..."}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="p-0 w-full"
+                          align="start"
+                        >
+                          <Command>
+                            <CommandInput placeholder="Pesquisar serviço..." />
+                            <CommandList>
+                              <CommandEmpty>
+                                Nenhum serviço encontrado.
+                              </CommandEmpty>
+                              {services.map((service) => (
+                                <CommandItem
+                                  key={service.service_id}
+                                  value={service.name}
+                                  onSelect={() => {
+                                    form.setValue(
+                                      `lines.${index}.line_service`,
+                                      service.service_id.toString()
+                                    );
+                                    form.setValue(
+                                      `lines.${index}.line_hours`,
+                                      service.hours_default
+                                    );
+                                    form.setValue(
+                                      `lines.${index}.line_title`,
+                                      service.name
+                                    );
 
-                                  const client = clients.find(
-                                    (client) =>
-                                      client.client_id.toString() ===
-                                      form.getValues("client")
-                                  );
+                                    const client = clients.find(
+                                      (client) =>
+                                        client.client_id.toString() ===
+                                        form.getValues("client")
+                                    );
 
-                                  const priceAdjust =
-                                    client?.client_type.price_adjust || 1;
-                                  const rate = service.service_rate.price || 0;
-                                  const hours =
-                                    form.getValues(
-                                      `lines.${index}.line_hours`
-                                    ) || 0;
-                                  const discount =
-                                    form.getValues(
-                                      `lines.${index}.line_discount`
-                                    ) || 0;
-                                  const subtotal = hours * rate * priceAdjust;
-                                  const total = subtotal * (1 - discount / 100);
+                                    const priceAdjust =
+                                      client?.client_type.price_adjust || 1;
+                                    const rate =
+                                      service.service_rate.price || 0;
+                                    const hours =
+                                      form.getValues(
+                                        `lines.${index}.line_hours`
+                                      ) || 0;
+                                    const discount =
+                                      form.getValues(
+                                        `lines.${index}.line_discount`
+                                      ) || 0;
+                                    const subtotal = hours * rate * priceAdjust;
+                                    const total =
+                                      subtotal * (1 - discount / 100);
 
-                                  form.setValue(
-                                    `lines.${index}.line_subtotal`,
-                                    subtotal
-                                  );
-                                  form.setValue(
-                                    `lines.${index}.line_total`,
-                                    total
-                                  );
+                                    form.setValue(
+                                      `lines.${index}.line_subtotal`,
+                                      subtotal
+                                    );
+                                    form.setValue(
+                                      `lines.${index}.line_total`,
+                                      total
+                                    );
 
-                                  setOpenServices((prev) => ({
-                                    ...prev,
-                                    [index]: false,
-                                  }));
-                                }}
-                              >
-                                {service.name}
-                              </CommandItem>
-                            ))}
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`lines.${index}.line_title`}
-                render={({ field }) => (
-                  <FormItem className="flex-1 basis-5/12">
-                    <FormLabel>Descrição</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        className="text-sm"
-                        placeholder="Insira a descrição do serviço"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`lines.${index}.line_hours`}
-                render={({ field }) => (
-                  <FormItem className="flex-1 basis-1/12">
-                    <FormLabel>Horas</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        className="text-sm"
-                        placeholder="Insira o número de horas"
-                        min={0}
-                        {...field}
-                        onChange={(e) => {
-                          let hours = isNaN(e.target.valueAsNumber)
-                            ? 0
-                            : e.target.valueAsNumber;
+                                    setOpenServices((prev) => ({
+                                      ...prev,
+                                      [index]: false,
+                                    }));
+                                  }}
+                                >
+                                  {service.name}
+                                </CommandItem>
+                              ))}
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex items-end gap-4">
+                <FormField
+                  control={form.control}
+                  name={`lines.${index}.line_title`}
+                  render={({ field }) => (
+                    <FormItem className="flex-1 basis-8/12">
+                      <FormLabel>Descrição</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          className="text-sm"
+                          placeholder="Insira a descrição do serviço"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`lines.${index}.line_hours`}
+                  render={({ field }) => (
+                    <FormItem className="flex-1 basis-1/12">
+                      <FormLabel>Horas</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          className="text-sm"
+                          placeholder="Insira o número de horas"
+                          min={0}
+                          {...field}
+                          onChange={(e) => {
+                            let hours = isNaN(e.target.valueAsNumber)
+                              ? 0
+                              : e.target.valueAsNumber;
 
-                          if (hours < 0) hours = 0;
+                            if (hours < 0) hours = 0;
 
-                          field.onChange(hours);
+                            field.onChange(hours);
 
-                          const service = services.find(
-                            (service) =>
-                              service.service_id.toString() ===
-                              form.getValues(`lines.${index}.line_service`)
-                          );
+                            const service = services.find(
+                              (service) =>
+                                service.service_id.toString() ===
+                                form.getValues(`lines.${index}.line_service`)
+                            );
 
-                          const client = clients.find(
-                            (client) =>
-                              client.client_id.toString() ===
-                              form.getValues("client")
-                          );
+                            const client = clients.find(
+                              (client) =>
+                                client.client_id.toString() ===
+                                form.getValues("client")
+                            );
 
-                          const priceAdjust =
-                            client?.client_type.price_adjust || 1;
-                          const rate = service ? service.service_rate.price : 0;
-                          const discount =
-                            form.getValues(`lines.${index}.line_discount`) || 0;
-                          const subtotal = hours * rate * priceAdjust;
-                          const total = subtotal * (1 - discount / 100);
+                            const priceAdjust =
+                              client?.client_type.price_adjust || 1;
+                            const rate = service
+                              ? service.service_rate.price
+                              : 0;
+                            const discount =
+                              form.getValues(`lines.${index}.line_discount`) ||
+                              0;
+                            const subtotal = hours * rate * priceAdjust;
+                            const total = subtotal * (1 - discount / 100);
 
-                          form.setValue(
-                            `lines.${index}.line_subtotal`,
-                            subtotal
-                          );
-                          form.setValue(`lines.${index}.line_total`, total);
+                            form.setValue(
+                              `lines.${index}.line_subtotal`,
+                              subtotal
+                            );
+                            form.setValue(`lines.${index}.line_total`, total);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`lines.${index}.line_subtotal`}
+                  render={({ field }) => (
+                    <FormItem className="flex-1 basis-1/12">
+                      <FormLabel>Subtotal</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          className="text-sm"
+                          placeholder="Subtotal"
+                          disabled
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`lines.${index}.line_discount`}
+                  render={({ field }) => (
+                    <FormItem className="flex-1 basis-1/12">
+                      <FormLabel>Desconto</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          className="text-sm"
+                          placeholder="Insira a percentagem de desconto"
+                          min={0}
+                          max={100}
+                          {...field}
+                          onChange={(e) => {
+                            let discount = isNaN(e.target.valueAsNumber)
+                              ? 0
+                              : e.target.valueAsNumber;
+
+                            if (discount < 0) discount = 0;
+                            if (discount > 100) discount = 100;
+
+                            field.onChange(discount);
+
+                            const service = services.find(
+                              (service) =>
+                                service.service_id.toString() ===
+                                form.getValues(`lines.${index}.line_service`)
+                            );
+
+                            const client = clients.find(
+                              (client) =>
+                                client.client_id.toString() ===
+                                form.getValues("client")
+                            );
+
+                            const priceAdjust =
+                              client?.client_type.price_adjust || 1;
+                            const rate = service
+                              ? service.service_rate.price
+                              : 0;
+                            const hours =
+                              form.getValues(`lines.${index}.line_hours`) || 0;
+                            const subtotal = hours * rate * priceAdjust;
+                            const total = subtotal * (1 - discount / 100);
+
+                            form.setValue(
+                              `lines.${index}.line_subtotal`,
+                              subtotal
+                            );
+                            form.setValue(`lines.${index}.line_total`, total);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`lines.${index}.line_total`}
+                  render={({ field }) => (
+                    <FormItem className="flex-1 basis-1/12">
+                      <FormLabel>Total</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          className="text-sm"
+                          placeholder="Total"
+                          disabled
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    setShowDeleteDialog(index);
+                  }}
+                >
+                  <Minus />
+                </Button>
+                <AlertDialog open={showDeleteDialog === index}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        De certeza que pretende eliminar esta linha de
+                        orçamento?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Esta ação não pode ser anulada.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel
+                        onClick={() => setShowDeleteDialog(null)}
+                      >
+                        Cancelar
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          remove(index);
+                          setShowDeleteDialog(null);
                         }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`lines.${index}.line_subtotal`}
-                render={({ field }) => (
-                  <FormItem className="flex-1 basis-1/12">
-                    <FormLabel>Subtotal</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        className="text-sm"
-                        placeholder="Subtotal"
-                        disabled
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`lines.${index}.line_discount`}
-                render={({ field }) => (
-                  <FormItem className="flex-1 basis-1/12">
-                    <FormLabel>Desconto</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        className="text-sm"
-                        placeholder="Insira a percentagem de desconto"
-                        min={0}
-                        max={100}
-                        {...field}
-                        onChange={(e) => {
-                          let discount = isNaN(e.target.valueAsNumber)
-                            ? 0
-                            : e.target.valueAsNumber;
-
-                          if (discount < 0) discount = 0;
-                          if (discount > 100) discount = 100;
-
-                          field.onChange(discount);
-
-                          const service = services.find(
-                            (service) =>
-                              service.service_id.toString() ===
-                              form.getValues(`lines.${index}.line_service`)
-                          );
-
-                          const client = clients.find(
-                            (client) =>
-                              client.client_id.toString() ===
-                              form.getValues("client")
-                          );
-
-                          const priceAdjust =
-                            client?.client_type.price_adjust || 1;
-                          const rate = service ? service.service_rate.price : 0;
-                          const hours =
-                            form.getValues(`lines.${index}.line_hours`) || 0;
-                          const subtotal = hours * rate * priceAdjust;
-                          const total = subtotal * (1 - discount / 100);
-
-                          form.setValue(
-                            `lines.${index}.line_subtotal`,
-                            subtotal
-                          );
-                          form.setValue(`lines.${index}.line_total`, total);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`lines.${index}.line_total`}
-                render={({ field }) => (
-                  <FormItem className="flex-1 basis-1/12">
-                    <FormLabel>Total</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        className="text-sm"
-                        placeholder="Total"
-                        disabled
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  setShowDeleteDialog(index);
-                }}
-              >
-                <Minus />
-              </Button>
-              <AlertDialog open={showDeleteDialog === index}>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      De certeza que pretende eliminar esta linha de orçamento?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Esta ação não pode ser anulada.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel
-                      onClick={() => setShowDeleteDialog(null)}
-                    >
-                      Cancelar
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => {
-                        remove(index);
-                        setShowDeleteDialog(null);
-                      }}
-                      className={buttonVariants({ variant: "destructive" })}
-                    >
-                      Eliminar linha de orçamento
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                        className={buttonVariants({ variant: "destructive" })}
+                      >
+                        Eliminar linha de orçamento
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           ))}
           <Button
@@ -1295,85 +1331,87 @@ export function EditQuoteForm({ quoteId }: { quoteId: string }) {
             <Plus />
           </Button>
           <Separator />
-          <FormField
-            control={form.control}
-            name={"subtotal"}
-            render={({ field }) => (
-              <FormItem className="flex justify-self-end">
-                <FormLabel className="min-w-[65px]">Subtotal</FormLabel>
-                <FormControl>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      className="text-sm w-[100px]"
-                      placeholder="Subtotal"
-                      disabled
-                      {...field}
-                      value={subtotal}
-                    />
-                    <span className="text-sm text-muted-foreground">€</span>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name={"discount"}
-            render={({ field }) => (
-              <FormItem className="flex justify-self-end">
-                <FormLabel className="min-w-[65px]">Desconto</FormLabel>
-                <FormControl>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      className="text-sm w-[100px]"
-                      placeholder="Insira a percentagem de desconto"
-                      min={0}
-                      max={100}
-                      {...field}
-                      onChange={(e) => {
-                        let discount = isNaN(e.target.valueAsNumber)
-                          ? 0
-                          : e.target.valueAsNumber;
+          <div className="space-y-4">
+            <FormField
+              control={form.control}
+              name={"subtotal"}
+              render={({ field }) => (
+                <FormItem className="flex justify-self-end">
+                  <FormLabel className="min-w-[65px]">Subtotal</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        className="text-sm w-[100px]"
+                        placeholder="Subtotal"
+                        disabled
+                        {...field}
+                        value={subtotal}
+                      />
+                      <span className="text-sm text-muted-foreground">€</span>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name={"discount"}
+              render={({ field }) => (
+                <FormItem className="flex justify-self-end">
+                  <FormLabel className="min-w-[65px]">Desconto</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        className="text-sm w-[100px]"
+                        placeholder="Insira a percentagem de desconto"
+                        min={0}
+                        max={100}
+                        {...field}
+                        onChange={(e) => {
+                          let discount = isNaN(e.target.valueAsNumber)
+                            ? 0
+                            : e.target.valueAsNumber;
 
-                        if (discount < 0) discount = 0;
-                        if (discount > 100) discount = 100;
+                          if (discount < 0) discount = 0;
+                          if (discount > 100) discount = 100;
 
-                        field.onChange(discount);
-                      }}
-                    />
-                    <span className="text-sm text-muted-foreground">%</span>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name={"total"}
-            render={({ field }) => (
-              <FormItem className="flex justify-self-end">
-                <FormLabel className="min-w-[65px]">Total</FormLabel>
-                <FormControl>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      className="text-sm w-[100px]"
-                      placeholder="Total"
-                      disabled
-                      {...field}
-                      value={total}
-                    />
-                    <span className="text-sm text-muted-foreground">€</span>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                          field.onChange(discount);
+                        }}
+                      />
+                      <span className="text-sm text-muted-foreground">%</span>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name={"total"}
+              render={({ field }) => (
+                <FormItem className="flex justify-self-end">
+                  <FormLabel className="min-w-[65px]">Total</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        className="text-sm w-[100px]"
+                        placeholder="Total"
+                        disabled
+                        {...field}
+                        value={total}
+                      />
+                      <span className="text-sm text-muted-foreground">€</span>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
         <Button type="submit">Atualizar orçamento</Button>
       </form>

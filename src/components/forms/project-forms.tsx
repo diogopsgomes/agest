@@ -156,7 +156,7 @@ export function NewProjectForm() {
             name="image_url"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Image</FormLabel>
+                <FormLabel>Imagem</FormLabel>
                 <FormControl>
                   <Input
                     className="text-sm"
