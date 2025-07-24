@@ -8,6 +8,7 @@ import { Download, Loader2, Mail, Send, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   deleteQuote,
@@ -39,6 +40,7 @@ export default function QuoteMenu({ quoteId }: { quoteId: string }) {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [loadingDownload, setLoadingDownload] = useState(false);
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
@@ -97,6 +99,9 @@ export default function QuoteMenu({ quoteId }: { quoteId: string }) {
             getQuote(quoteId)
               .then((res) => {
                 setEmail(res.data.client.email || "");
+                setMessage(
+                  `Caro/a ${res.data.client.name},\n\nSegue, em anexo, o orçamento solicitado: ${res.data.title}.\n\nAtenciosamente,\n${res.data.user.name}`
+                );
                 setShowEmailDialog(true);
               })
               .catch((err) => toast.error(err.message));
@@ -126,6 +131,15 @@ export default function QuoteMenu({ quoteId }: { quoteId: string }) {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
+              <div className="grid gap-3">
+                <Label htmlFor="message">Mensagem</Label>
+                <Textarea
+                  id="message"
+                  name="message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+              </div>
             </div>
             <DialogFooter>
               <DialogClose asChild>
@@ -135,7 +149,7 @@ export default function QuoteMenu({ quoteId }: { quoteId: string }) {
                 type="submit"
                 onClick={() => {
                   setLoadingEmail(true);
-                  sendQuoteDocument(quoteId, email)
+                  sendQuoteDocument(quoteId, email, message)
                     .then((res) => {
                       toast.success("Orçamento enviado");
                       setShowEmailDialog(false);

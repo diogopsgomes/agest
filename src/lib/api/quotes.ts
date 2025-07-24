@@ -106,14 +106,14 @@ export async function generateQuoteDocument(id: any) {
   }
 }
 
-export async function sendQuoteDocument(id: any, email: string) {
+export async function sendQuoteDocument(id: any, email: any, message: any) {
   try {
     const res = await fetch(`${base_url}/quotes/${id}/pdf/send`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, message }),
     });
 
     if (!res.ok) throw new Error(res.statusText);

@@ -34,14 +34,14 @@ export async function getProject(id: any) {
   }
 }
 
-export async function postProject(category: any) {
+export async function postProject(project: any) {
   try {
     const res = await fetch(`${base_url}/projects/add`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(category),
+      body: JSON.stringify(project),
     });
 
     if (!res.ok) throw new Error(res.statusText);
@@ -52,14 +52,14 @@ export async function postProject(category: any) {
   }
 }
 
-export async function putProject(id: any, category: any) {
+export async function putProject(id: any, project: any) {
   try {
     const res = await fetch(`${base_url}/projects/update/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(category),
+      body: JSON.stringify(project),
     });
 
     if (!res.ok) throw new Error(res.statusText);
