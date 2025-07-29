@@ -63,10 +63,8 @@ const FormSchema = z.object({
     .string({ required_error: "O telefone do cliente é obrigatório" })
     /* .nonempty({ message: "O telefone do cliente é obrigatório" }) */
     .optional(),
-  client_type: z
-    .string({ required_error: "O tipo de cliente é obrigatório" })
-    /* .nonempty({ message: "O tipo de cliente é obrigatório" }) */
-    .optional(),
+  client_type: z.string({ required_error: "O tipo de cliente é obrigatório" }),
+  /* .nonempty({ message: "O tipo de cliente é obrigatório" }) */
 });
 
 export function NewClientForm() {

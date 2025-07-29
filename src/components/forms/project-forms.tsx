@@ -6,12 +6,13 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 
+import { getTags } from "@/lib/api/tags";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { getCategories } from "@/lib/api/categories";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getCategories, getCategory } from "@/lib/api/categories";
 import { getProject, postProject, putProject } from "@/lib/api/projects";
 import {
   Form,
@@ -28,9 +29,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import MultipleSelector from "../ui/multiple-selector";
 
 interface Category {
   category_id: number;
+  name: string;
+}
+
+interface Tag {
+  tag_id: number;
   name: string;
 }
 
@@ -40,18 +47,19 @@ const FormSchema = z.object({
     .nonempty({ message: "O nome do projeto é obrigatório" }),
   description: z
     .string({
-      required_error: "A descrição do projeto do cliente é obrigatória",
+      required_error: "A descrição do projeto é obrigatória",
     })
-    .nonempty({ message: "A descrição do projeto do cliente é obrigatória" }),
+    .optional(),
   url: z
     .string({ required_error: "O url do projeto é obrigatório" })
     .optional(),
   image_url: z
     .string({ required_error: "O url da imagem do projeto é obrigatório" })
     .optional(),
-  category: z
-    .string({ required_error: "A categoria do projeto é obrigatória" })
-    .optional(),
+  category: z.string({
+    required_error: "A categoria do projeto é obrigatória",
+  }),
+  tags: z.array(z.string()).optional(),
 });
 
 export function NewProjectForm() {
@@ -59,9 +67,14 @@ export function NewProjectForm() {
 
   const [categories, setCategories] = useState<Category[]>([]);
 
+  const [tags, setTags] = useState<Tag[]>([]);
+
   useEffect(() => {
     getCategories()
       .then((res) => setCategories(res.data))
+      .catch((err) => toast.error(err.message, { duration: 12000 }));
+    getTags()
+      .then((res) => setTags(res.data))
       .catch((err) => toast.error(err.message, { duration: 12000 }));
   }, []);
 
@@ -73,6 +86,7 @@ export function NewProjectForm() {
       url: "",
       image_url: "",
       category: "",
+      tags: [],
     },
   });
 
@@ -83,6 +97,7 @@ export function NewProjectForm() {
       url: data.url,
       image_url: data.image_url,
       category: data.category,
+      tags: (data.tags ?? []).map((tag) => parseInt(tag)),
     };
 
     postProject(project)
@@ -199,6 +214,48 @@ export function NewProjectForm() {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="tags"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tags</FormLabel>
+              <FormControl>
+                {tags.length > 0 && (
+                  <MultipleSelector
+                    value={
+                      field.value
+                        ? tags
+                            .filter((tag) =>
+                              field.value?.includes(tag.tag_id.toString())
+                            )
+                            .map((tag) => ({
+                              label: tag.name,
+                              value: tag.tag_id.toString(),
+                            }))
+                        : []
+                    }
+                    onChange={(options) => {
+                      field.onChange(options.map((option) => option.value));
+                    }}
+                    defaultOptions={tags.map((tag) => ({
+                      label: tag.name,
+                      value: tag.tag_id.toString(),
+                    }))}
+                    placeholder="Selecione as tags..."
+                    emptyIndicator={
+                      <p className="text-center text-sm text-muted-foreground">
+                        Não foram encontradas tags.
+                      </p>
+                    }
+                    className="text-sm"
+                  />
+                )}
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <Button type="submit">Adicionar projeto</Button>
       </form>
     </Form>
@@ -208,6 +265,8 @@ export function NewProjectForm() {
 export function EditProjectForm({ projectId }: { projectId: string }) {
   const [categories, setCategories] = useState<Category[]>([]);
 
+  const [tags, setTags] = useState<Tag[]>([]);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -216,6 +275,7 @@ export function EditProjectForm({ projectId }: { projectId: string }) {
       url: "",
       image_url: "",
       category: "",
+      tags: [],
     },
   });
 
@@ -223,6 +283,9 @@ export function EditProjectForm({ projectId }: { projectId: string }) {
     getCategories()
       .then((res) => setCategories(res.data))
       .catch((err) => toast.error(err.message));
+    getTags()
+      .then((res) => setTags(res.data))
+      .catch((err) => toast.error(err.message, { duration: 12000 }));
     getProject(projectId)
       .then((res) => {
         form.reset({
@@ -231,6 +294,9 @@ export function EditProjectForm({ projectId }: { projectId: string }) {
           url: res.data.url ? res.data.url : "",
           image_url: res.data.image_url ? res.data.image_url : "",
           category: res.data.category.id ? String(res.data.category.id) : "",
+          tags: res.data.tags
+            ? res.data.tags.map((tag: any) => tag.tag_id.toString())
+            : [],
         });
       })
       .catch((err) => toast.error(err.message));
@@ -344,6 +410,48 @@ export function EditProjectForm({ projectId }: { projectId: string }) {
                   ))}
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="tags"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tags</FormLabel>
+              <FormControl>
+                {tags.length > 0 && (
+                  <MultipleSelector
+                    value={
+                      field.value
+                        ? tags
+                            .filter((tag) =>
+                              field.value?.includes(tag.tag_id.toString())
+                            )
+                            .map((tag) => ({
+                              label: tag.name,
+                              value: tag.tag_id.toString(),
+                            }))
+                        : []
+                    }
+                    onChange={(options) => {
+                      field.onChange(options.map((option) => option.value));
+                    }}
+                    defaultOptions={tags.map((tag) => ({
+                      label: tag.name,
+                      value: tag.tag_id.toString(),
+                    }))}
+                    placeholder="Selecione as tags..."
+                    emptyIndicator={
+                      <p className="text-center text-sm text-muted-foreground">
+                        Não foram encontradas tags.
+                      </p>
+                    }
+                    className="text-sm"
+                  />
+                )}
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
