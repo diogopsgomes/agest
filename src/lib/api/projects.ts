@@ -1,3 +1,5 @@
+import Cookies from "js-cookie";
+
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function getProjects() {
@@ -5,6 +7,7 @@ export async function getProjects() {
     const res = await fetch(`${base_url}/projects`, {
       method: "GET",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -22,6 +25,7 @@ export async function getProject(id: any) {
     const res = await fetch(`${base_url}/projects/${id}`, {
       method: "GET",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -39,6 +43,7 @@ export async function postProject(project: any) {
     const res = await fetch(`${base_url}/projects/add`, {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(project),
@@ -57,6 +62,7 @@ export async function putProject(id: any, project: any) {
     const res = await fetch(`${base_url}/projects/update/${id}`, {
       method: "PUT",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(project),
@@ -75,6 +81,7 @@ export async function deleteProject(id: any) {
     const res = await fetch(`${base_url}/projects/remove/${id}`, {
       method: "DELETE",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });

@@ -27,7 +27,7 @@ interface Project {
   image_url: string;
 }
 
-export default function PortfolioGrid() {
+export default function ProjectsGrid() {
   const router = useRouter();
 
   const [projects, setProjects] = useState<Project[]>([]);

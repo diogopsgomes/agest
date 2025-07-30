@@ -1,3 +1,5 @@
+import Cookies from "js-cookie";
+
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function getQuotes() {
@@ -5,6 +7,7 @@ export async function getQuotes() {
     const res = await fetch(`${base_url}/quotes`, {
       method: "GET",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -22,6 +25,7 @@ export async function getQuote(id: any) {
     const res = await fetch(`${base_url}/quotes/${id}`, {
       method: "GET",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -41,6 +45,7 @@ export async function postQuote(quote: any) {
     const res = await fetch(`${base_url}/quotes/add`, {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(quote),
@@ -59,6 +64,7 @@ export async function putQuote(id: any, quote: any) {
     const res = await fetch(`${base_url}/quotes/update/${id}`, {
       method: "PUT",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(quote),
@@ -77,6 +83,7 @@ export async function deleteQuote(id: any) {
     const res = await fetch(`${base_url}/quotes/remove/${id}`, {
       method: "DELETE",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -94,6 +101,7 @@ export async function generateQuoteDocument(id: any) {
     const res = await fetch(`${base_url}/quotes/${id}/pdf/generate`, {
       method: "GET",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -111,6 +119,7 @@ export async function sendQuoteDocument(id: any, email: any, message: any) {
     const res = await fetch(`${base_url}/quotes/${id}/pdf/send`, {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, message }),

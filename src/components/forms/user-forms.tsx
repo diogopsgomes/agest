@@ -74,7 +74,7 @@ export function NewUserForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-5/6 sm:w-2/3 space-y-6"
       >
-        <div className="grid lg:grid-cols-6 gap-6">
+        <div className="grid gap-6">
           <FormField
             control={form.control}
             name="name"
@@ -94,15 +94,14 @@ export function NewUserForm() {
           />
           <FormField
             control={form.control}
-            name="password"
+            name="email"
             render={({ field }) => (
-              <FormItem className="lg:col-span-4">
-                <FormLabel>Password</FormLabel>
+              <FormItem>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
                     className="text-sm"
-                    placeholder="Insira a password do utilizador"
-                    type="password"
+                    placeholder="Insira o email do utilizador"
                     {...field}
                   />
                 </FormControl>
@@ -112,14 +111,15 @@ export function NewUserForm() {
           />
           <FormField
             control={form.control}
-            name="email"
+            name="password"
             render={({ field }) => (
-              <FormItem className="lg:col-span-4">
-                <FormLabel>Email</FormLabel>
+              <FormItem>
+                <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input
                     className="text-sm"
-                    placeholder="Insira o email do utilizador"
+                    placeholder="Insira a password do utilizador"
+                    type="password"
                     {...field}
                   />
                 </FormControl>
@@ -166,7 +166,7 @@ export function EditUserForm({ userId }: { userId: string }) {
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-5/6 sm:w-2/3 space-y-6"
       >
-        <div className="grid lg:grid-cols-6 gap-6">
+        <div className="grid gap-6">
           <FormField
             control={form.control}
             name="name"
@@ -188,7 +188,7 @@ export function EditUserForm({ userId }: { userId: string }) {
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem className="lg:col-span-4">
+              <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input

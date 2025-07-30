@@ -1,4 +1,4 @@
-import { log } from "console";
+import Cookies from "js-cookie";
 
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -7,6 +7,7 @@ export async function getClients() {
     const res = await fetch(`${base_url}/clients`, {
       method: "GET",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -24,6 +25,7 @@ export async function getClient(id: any) {
     const res = await fetch(`${base_url}/clients/${id}`, {
       method: "GET",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -41,6 +43,7 @@ export async function postClient(client: any) {
     const res = await fetch(`${base_url}/clients/add`, {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(client),
@@ -59,6 +62,7 @@ export async function putClient(id: any, client: any) {
     const res = await fetch(`${base_url}/clients/update/${id}`, {
       method: "PUT",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(client),
@@ -77,6 +81,7 @@ export async function deleteClient(id: any) {
     const res = await fetch(`${base_url}/clients/remove/${id}`, {
       method: "DELETE",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -94,6 +99,7 @@ export async function getClientTypes() {
     const res = await fetch(`${base_url}/client-types`, {
       method: "GET",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -111,6 +117,7 @@ export async function getClientType(id: any) {
     const res = await fetch(`${base_url}/client-types/${id}`, {
       method: "GET",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -128,6 +135,7 @@ export async function postClientType(clientType: any) {
     const res = await fetch(`${base_url}/client-types/add`, {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(clientType),
@@ -146,6 +154,7 @@ export async function putClientType(id: any, clientType: any) {
     const res = await fetch(`${base_url}/client-types/update/${id}`, {
       method: "PUT",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(clientType),
@@ -164,6 +173,7 @@ export async function deleteClientType(id: any) {
     const res = await fetch(`${base_url}/client-types/remove/${id}`, {
       method: "DELETE",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });

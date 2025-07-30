@@ -1,3 +1,5 @@
+import Cookies from "js-cookie";
+
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function getTags() {
@@ -5,6 +7,7 @@ export async function getTags() {
     const res = await fetch(`${base_url}/tags`, {
       method: "GET",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -22,6 +25,7 @@ export async function getTag(id: any) {
     const res = await fetch(`${base_url}/tags/${id}`, {
       method: "GET",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -39,6 +43,7 @@ export async function postTag(tag: any) {
     const res = await fetch(`${base_url}/tags/add`, {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(tag),
@@ -57,6 +62,7 @@ export async function putTag(id: any, tag: any) {
     const res = await fetch(`${base_url}/tags/update/${id}`, {
       method: "PUT",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(tag),
@@ -75,6 +81,7 @@ export async function deleteTag(id: any) {
     const res = await fetch(`${base_url}/tags/remove/${id}`, {
       method: "DELETE",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });

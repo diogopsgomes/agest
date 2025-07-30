@@ -1,3 +1,5 @@
+import Cookies from "js-cookie";
+
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function getCategories() {
@@ -5,6 +7,7 @@ export async function getCategories() {
     const res = await fetch(`${base_url}/categories`, {
       method: "GET",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -22,6 +25,7 @@ export async function getCategory(id: any) {
     const res = await fetch(`${base_url}/categories/${id}`, {
       method: "GET",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
@@ -39,6 +43,7 @@ export async function postCategory(category: any) {
     const res = await fetch(`${base_url}/categories/add`, {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(category),
@@ -57,6 +62,7 @@ export async function putCategory(id: any, category: any) {
     const res = await fetch(`${base_url}/categories/update/${id}`, {
       method: "PUT",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(category),
@@ -75,6 +81,7 @@ export async function deleteCategory(id: any) {
     const res = await fetch(`${base_url}/categories/remove/${id}`, {
       method: "DELETE",
       headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
         "Content-Type": "application/json",
       },
     });
