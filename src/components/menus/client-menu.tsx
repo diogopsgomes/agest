@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { toast } from "sonner";
-import { FilePlus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
 import { deleteClient } from "@/lib/api/clients";
@@ -27,10 +27,6 @@ export default function ClientMenu({ clientId }: { clientId: string }) {
   return (
     <div className="flex justify-between items-center gap-2 mb-8">
       <div className="flex items-center gap-2">
-        <Button variant="outline">
-          <FilePlus />
-          <span>Novo orçamento</span>
-        </Button>
         <Button
           variant="destructive"
           onClick={() => setShowDeleteDialog(true)}

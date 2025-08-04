@@ -41,6 +41,13 @@ const FormSchema = z.object({
   name: z
     .string({ required_error: "O nome do cliente é obrigatório" })
     .nonempty({ message: "O nome do cliente é obrigatório" }),
+  contact_person: z
+    .string({
+      required_error: "O nome da pessoa de contacto do cliente é obrigatório",
+    })
+    .nonempty({
+      message: "O nome da pessoa de contacto do cliente é obrigatório",
+    }),
   company: z
     .string({
       required_error: "A designação da empresa do cliente é obrigatória",
@@ -82,6 +89,7 @@ export function NewClientForm() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: "",
+      contact_person: "",
       company: "",
       vat: "",
       email: "",
@@ -94,6 +102,7 @@ export function NewClientForm() {
   function onSubmit(data: z.infer<typeof FormSchema>) {
     const client = {
       name: data.name,
+      contact_person: data.contact_person,
       company: data.company,
       vat: data.vat,
       email: data.email,
@@ -126,6 +135,23 @@ export function NewClientForm() {
                 <Input
                   className="text-sm"
                   placeholder="Insira o nome do cliente"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="contact_person"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Pessoa de Contacto</FormLabel>
+              <FormControl>
+                <Input
+                  className="text-sm"
+                  placeholder="Insira o nome da pessoa de contacto do cliente"
                   {...field}
                 />
               </FormControl>
@@ -265,6 +291,7 @@ export function EditClientForm({ clientId }: { clientId: string }) {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: "",
+      contact_person: "",
       company: "",
       vat: "",
       email: "",
@@ -282,6 +309,9 @@ export function EditClientForm({ clientId }: { clientId: string }) {
       .then((res) => {
         form.reset({
           name: res.data.name ? res.data.name : "",
+          contact_person: res.data.contact_person
+            ? res.data.contact_person
+            : "",
           company: res.data.company ? res.data.company : "",
           vat: res.data.vat ? res.data.vat : "",
           email: res.data.email ? res.data.email : "",
@@ -317,6 +347,23 @@ export function EditClientForm({ clientId }: { clientId: string }) {
                 <Input
                   className="text-sm"
                   placeholder="Nome do cliente"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="contact_person"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Pessoa de Contacto</FormLabel>
+              <FormControl>
+                <Input
+                  className="text-sm"
+                  placeholder="Nome da pessoa de contacto do cliente"
                   {...field}
                 />
               </FormControl>

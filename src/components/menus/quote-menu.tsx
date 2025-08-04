@@ -100,7 +100,11 @@ export default function QuoteMenu({ quoteId }: { quoteId: string }) {
               .then((res) => {
                 setEmail(res.data.client.email || "");
                 setMessage(
-                  `Caro/a ${res.data.client.name},\n\nSegue, em anexo, o orçamento solicitado: ${res.data.title}.\n\nAtenciosamente,\n${res.data.user.name}`
+                  `Caro/a ${
+                    res.data.client.contact_person || res.data.client.name
+                  },\n\nSegue, em anexo, o orçamento solicitado: ${
+                    res.data.title
+                  }.\n\nAtenciosamente,\n${res.data.user.name}`
                 );
                 setShowEmailDialog(true);
               })

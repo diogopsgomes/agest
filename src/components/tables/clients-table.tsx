@@ -23,6 +23,7 @@ import {
 interface Client {
   client_id: string;
   name: string;
+  contact_person: string;
   company: string;
   vat: string;
   email: string;
@@ -52,6 +53,7 @@ export default function ClientsTable() {
   const filteredClients = clients.filter((client) =>
     [
       client.name,
+      client.contact_person,
       client.company,
       client.vat,
       client.email,
@@ -87,6 +89,7 @@ export default function ClientsTable() {
         <TableHeader>
           <TableRow>
             <TableHead className="w-[25%]">Nome</TableHead>
+            <TableHead className="w-[25%]">Pessoa de Contacto</TableHead>
             <TableHead className="w-[25%]">Empresa</TableHead>
             <TableHead>NIPC</TableHead>
             <TableHead>Email</TableHead>
@@ -125,6 +128,9 @@ export default function ClientsTable() {
                     <TableCell>
                       <Skeleton className="h-5 w-full" />
                     </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-5 w-full" />
+                    </TableCell>
                   </TableRow>
                 ))
             : filteredClients.map((client, idx) => (
@@ -138,6 +144,9 @@ export default function ClientsTable() {
                   }
                 >
                   <TableCell className="font-medium">{client.name}</TableCell>
+                  <TableCell className="font-medium">
+                    {client.contact_person}
+                  </TableCell>
                   <TableCell className="font-medium">
                     {client.company}
                   </TableCell>
