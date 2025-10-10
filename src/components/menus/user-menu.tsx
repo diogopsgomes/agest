@@ -25,7 +25,7 @@ export default function UserMenu({ userId }: { userId: string }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   return (
-    <div className="flex justify-between items-center gap-2 mb-8">
+    <div className="flex justify-between items-center gap-2 mb-7 py-1.5 overflow-x-auto">
       <div className="flex items-center gap-2">
         <Button
           variant="destructive"
