@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { toast } from "sonner";
 import Cookies from "js-cookie";
 import {
@@ -73,30 +75,43 @@ const items = [
   },
 ];
 
-const user = {
-  id: Cookies.get("id"),
-  name: Cookies.get("name"),
-  email: Cookies.get("email"),
-};
-
 export function AppSidebar() {
   const { setOpenMobile } = useSidebar();
   const { isMobile } = useSidebar();
+
+  const [user, setUser] = useState({
+    id: "",
+    name: "",
+    email: "",
+  });
+
+  useEffect(() => {
+    const user = {
+      id: Cookies.get("id") || "",
+      name: Cookies.get("name") || "",
+      email: Cookies.get("email") || "",
+    };
+
+    setUser(user);
+  }, []);
 
   return (
     <aside>
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <SidebarMenu>
-            <SidebarMenuButton asChild>
-              <Link
-                href="/"
-                onClick={() => setOpenMobile(false)}
-              >
-                <AppIcon />
-                <AppWordmark className="w-12!" />
-              </Link>
-            </SidebarMenuButton>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link
+                  href="/"
+                  onClick={() => setOpenMobile(false)}
+                  aria-label="AGEST"
+                >
+                  <AppIcon />
+                  <AppWordmark className="w-12!" />
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
         <SidebarContent>
