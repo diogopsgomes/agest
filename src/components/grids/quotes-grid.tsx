@@ -6,9 +6,9 @@ import { toast } from "sonner";
 import { Calendar, RefreshCw, Search, User } from "lucide-react";
 
 import { useRouter } from "next/navigation";
+import { getQuotes } from "@/lib/api/quotes";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { getQuotes } from "@/lib/api/quotes";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Card,

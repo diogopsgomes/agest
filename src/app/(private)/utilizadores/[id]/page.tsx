@@ -1,3 +1,4 @@
+import PageTitle from "@/components/page-title";
 import UserMenu from "@/components/menus/user-menu";
 import { EditUserForm } from "@/components/forms/user-forms";
 
@@ -10,7 +11,7 @@ export default async function PerfilUtilizador({
 
   return (
     <>
-      <h1 className="text-2xl font-semibold mb-8">Perfil de utilizador</h1>
+      <PageTitle title="Perfil de utilizador" />
       <UserMenu userId={String(resolvedParams.id)} />
       <EditUserForm userId={String(resolvedParams.id)} />
     </>

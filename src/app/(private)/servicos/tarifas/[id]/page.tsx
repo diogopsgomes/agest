@@ -1,3 +1,4 @@
+import PageTitle from "@/components/page-title";
 import ServiceRateMenu from "@/components/menus/service-rate-menu";
 import { EditServiceRateForm } from "@/components/forms/service-rate-forms";
 
@@ -10,9 +11,7 @@ export default async function DetalhesTarifaServico({
 
   return (
     <>
-      <h1 className="text-2xl font-semibold mb-8">
-        Detalhes de tarifa de serviço
-      </h1>
+      <PageTitle title="Detalhes de tarifa de serviço" />
       <ServiceRateMenu serviceRateId={String(resolvedParams.id)} />
       <EditServiceRateForm serviceRateId={String(resolvedParams.id)} />
     </>

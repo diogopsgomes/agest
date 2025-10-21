@@ -1,3 +1,4 @@
+import PageTitle from "@/components/page-title";
 import ProjectMenu from "@/components/menus/project-menu";
 import { EditProjectForm } from "@/components/forms/project-forms";
 
@@ -10,7 +11,7 @@ export default async function DetalhesProjeto({
 
   return (
     <>
-      <h1 className="text-2xl font-semibold mb-8">Detalhes de projeto</h1>
+      <PageTitle title="Detalhes de projeto" />
       <ProjectMenu projectId={String(resolvedParams.id)} />
       <EditProjectForm projectId={String(resolvedParams.id)} />
     </>

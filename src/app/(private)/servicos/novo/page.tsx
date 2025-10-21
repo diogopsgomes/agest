@@ -4,7 +4,7 @@ import { NewServiceForm } from "@/components/forms/service-forms";
 export default function NovoServico() {
   return (
     <>
-      <PageTitle title="Novo Serviço" />
+      <PageTitle title="Novo serviço" />
       <NewServiceForm />
     </>
   );

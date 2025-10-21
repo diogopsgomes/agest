@@ -1,4 +1,5 @@
 import TagMenu from "@/components/menus/tag-menu";
+import PageTitle from "@/components/page-title";
 import { EditTagForm } from "@/components/forms/tag-forms";
 
 export default async function DetalhesTag({
@@ -10,7 +11,7 @@ export default async function DetalhesTag({
 
   return (
     <>
-      <h1 className="text-2xl font-semibold mb-8">Detalhes de tag</h1>
+      <PageTitle title="Detalhes de tag" />
       <TagMenu tagId={String(resolvedParams.id)} />
       <EditTagForm tagId={String(resolvedParams.id)} />
     </>
